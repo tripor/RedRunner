@@ -63,6 +63,11 @@ namespace RedRunner.Characters
         [SerializeField]
         protected AudioSource m_JumpAndGroundedAudioSource;
 
+        public delegate void HeartResetHandler();
+        public static event HeartResetHandler OnHeartReset;
+        public delegate void HeartLossHandler();
+        public static event HeartLossHandler OnHeartLoss;
+
         #endregion
 
         #region Private Variables
@@ -76,6 +81,7 @@ namespace RedRunner.Characters
         protected int m_CurrentFootstepSoundIndex = 0;
         protected Vector3 m_InitialScale;
         protected Vector3 m_InitialPosition;
+        protected int m_Lives = 3;
 
         #endregion
 
@@ -254,6 +260,14 @@ namespace RedRunner.Characters
             get
             {
                 return m_MainAudioSource;
+            }
+        }
+
+        public override int Lives
+        {
+            get
+            {
+                return m_Lives;
             }
         }
 
@@ -470,9 +484,17 @@ namespace RedRunner.Characters
 
         public override void Die(bool blood)
         {
-            // Get the current block of where the caracter died
-            TerrainGeneration.Block bl = TerrainGeneration.TerrainGenerator.Singleton.GetCharacterBlock();
-            if (!IsDead.Value)
+            m_Lives--;
+            if(OnHeartLoss != null)
+                OnHeartLoss();
+            if (m_Lives > 0)
+            {
+                // Get the current block of where the caracter died
+                TerrainGeneration.Block bl = TerrainGeneration.TerrainGenerator.Singleton.GetCharacterBlock();
+                // Place the character back when he dies
+                this.transform.position = new Vector2(bl.transform.position.x + bl.Restart_X, bl.transform.position.y + bl.Restart_Y);
+            }
+            else if(!IsDead.Value)
             {
                 IsDead.Value = true;
                 m_Skeleton.SetActive(true, m_Rigidbody2D.velocity);
@@ -506,6 +528,9 @@ namespace RedRunner.Characters
             transform.localScale = m_InitialScale;
             m_Rigidbody2D.velocity = Vector2.zero;
             m_Skeleton.SetActive(false, m_Rigidbody2D.velocity);
+            m_Lives = 3;
+            if (OnHeartReset != null)
+                OnHeartReset();
         }
 
         #endregion

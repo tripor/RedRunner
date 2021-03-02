@@ -8,30 +8,30 @@ using RedRunner.Collectables;
 namespace RedRunner.UI
 {
 
-	public class UICoinImage : Image
-	{
+    public class UICoinImage : Image
+    {
 
-		[SerializeField]
-		protected ParticleSystem m_ParticleSystem;
+        [SerializeField]
+        protected ParticleSystem m_ParticleSystem;
 
-		protected override void Awake ()
-		{
-			base.Awake ();
-		}
+        protected override void Awake()
+        {
+            base.Awake();
+        }
 
         protected override void Start()
         {
             GameManager.Singleton.m_Coin.AddEventAndFire(Coin_OnCoinCollected, this);
         }
 
-        void Coin_OnCoinCollected (int coinValue)
-		{
-			GetComponent<Animator> ().SetTrigger ("Collect");
-		}
+        void Coin_OnCoinCollected(int coinValue)
+        {
+            GetComponent<Animator>().SetTrigger("Collect");
+        }
 
-		public virtual void PlayParticleSystem ()
-		{
-			m_ParticleSystem.Play ();
-		}
-	}
+        public virtual void PlayParticleSystem()
+        {
+            m_ParticleSystem.Play();
+        }
+    }
 }
