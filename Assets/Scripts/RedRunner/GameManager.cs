@@ -21,8 +21,11 @@ namespace RedRunner
 
         public delegate void ResetHandler();
 
+        public delegate void TimerHandler(float newTime);
+
         public static event ResetHandler OnReset;
         public static event ScoreHandler OnScoreChanged;
+        public static event TimerHandler OnTimerChanged;
         public static event AudioEnabledHandler OnAudioEnabled;
 
         private static GameManager m_Singleton;
@@ -46,6 +49,7 @@ namespace RedRunner
         private float m_HighScore = 0f;
         private float m_LastScore = 0f;
         private float m_Score = 0f;
+        private float m_Timer = 300f;
 
         private bool m_GameStarted = false;
         private bool m_GameRunning = false;
@@ -56,6 +60,9 @@ namespace RedRunner
         /// with this in-house developed callbacks feature, we garantee that the callback will be removed when we don't need it.
         /// </summary>
         public Property<int> m_Coin = new Property<int>(0);
+
+        public float max_game_time = 300f;
+        public float coin_add_game_time = 5f;
 
 
         #region Getters
@@ -83,6 +90,27 @@ namespace RedRunner
             }
         }
         #endregion
+
+        public float Timer
+        {
+            get
+            {
+                return m_Timer;
+            }
+            set
+            {
+                m_Timer = value;
+                if (m_Timer <= 0)
+                {
+                    m_Timer = 0;
+                    StartCoroutine(DeathCrt(0.1f));
+                }
+                if (OnTimerChanged != null)
+                {
+                    OnTimerChanged(m_Timer);
+                }
+            }
+        }
 
         void Awake()
         {
@@ -134,15 +162,30 @@ namespace RedRunner
         {
             if (isDead)
             {
-                StartCoroutine(DeathCrt());
+                StartCoroutine(DeathCrt(1.5f));
             }
             else
             {
                 StopCoroutine("DeathCrt");
             }
         }
+        void CoinCollection(int new_value)
+        {
+            if (m_GameRunning)
+            {
+                m_Timer += coin_add_game_time;
+                if (m_Timer > max_game_time)
+                {
+                    m_Timer = max_game_time;
+                }
+                if (OnTimerChanged != null)
+                {
+                    OnTimerChanged(m_Timer);
+                }
+            }
+        }
 
-        IEnumerator DeathCrt()
+        IEnumerator DeathCrt(float wait_time)
         {
             m_LastScore = m_Score;
             if (m_Score > m_HighScore)
@@ -154,7 +197,7 @@ namespace RedRunner
                 OnScoreChanged(m_Score, m_HighScore, m_LastScore);
             }
 
-            yield return new WaitForSecondsRealtime(1.5f);
+            yield return new WaitForSecondsRealtime(wait_time);
 
             EndGame();
             var endScreen = UIManager.Singleton.UISCREENS.Find(el => el.ScreenInfo == UIScreenInfo.END_SCREEN);
@@ -164,6 +207,7 @@ namespace RedRunner
         private void Start()
         {
             m_MainCharacter.IsDead.AddEventAndFire(UpdateDeathEvent, this);
+            m_Coin.AddEventAndFire(CoinCollection, this);
             m_StartScoreX = m_MainCharacter.transform.position.x;
             Init();
         }
@@ -173,12 +217,23 @@ namespace RedRunner
             EndGame();
             UIManager.Singleton.Init();
             StartCoroutine(Load());
+            m_Timer = max_game_time;
         }
 
         void Update()
         {
             if (m_GameRunning)
             {
+                m_Timer -= Time.deltaTime;
+                if (m_Timer <= 0)
+                {
+                    m_Timer = 0;
+                    StartCoroutine(DeathCrt(0.1f));
+                }
+                if (OnTimerChanged != null)
+                {
+                    OnTimerChanged(m_Timer);
+                }
                 if (m_MainCharacter.transform.position.x > m_StartScoreX && m_MainCharacter.transform.position.x > m_Score)
                 {
                     m_Score = m_MainCharacter.transform.position.x;
@@ -273,6 +328,7 @@ namespace RedRunner
         public void Reset()
         {
             m_Score = 0f;
+            m_Timer = max_game_time;
             if (OnReset != null)
             {
                 OnReset();

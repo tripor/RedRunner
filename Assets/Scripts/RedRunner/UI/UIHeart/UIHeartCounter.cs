@@ -21,13 +21,13 @@ namespace RedRunner.UI
             switch (lives)
             {
                 case 3:
-                    heart3.ChangeHeart();
+                    heart3.EmptyHeart();
                     break;
                 case 2:
-                    heart2.ChangeHeart();
+                    heart2.EmptyHeart();
                     break;
                 case 1:
-                    heart1.ChangeHeart();
+                    heart1.EmptyHeart();
                     break;
                 default:
                     break;
@@ -38,9 +38,9 @@ namespace RedRunner.UI
         void RedCharacter_OnHeartReset()
         {
             lives = 3;
-            heart3.ChangeHeart();
-            heart2.ChangeHeart();
-            heart1.ChangeHeart();
+            heart3.ResetHeart();
+            heart2.ResetHeart();
+            heart1.ResetHeart();
         }
     }
 }

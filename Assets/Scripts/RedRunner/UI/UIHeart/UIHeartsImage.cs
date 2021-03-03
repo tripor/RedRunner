@@ -11,9 +11,17 @@ namespace RedRunner.UI
         {
         }
 
-        public void ChangeHeart()
+        public void EmptyHeart()
         {
-            GetComponent<Animator>().SetTrigger("Reverse");
+            GetComponent<Animator>().SetTrigger("Empty");
+        }
+        public void FillHeart()
+        {
+            GetComponent<Animator>().SetTrigger("Fill");
+        }
+        public void ResetHeart()
+        {
+            GetComponent<Animator>().SetTrigger("Reset");
         }
     }
 }
