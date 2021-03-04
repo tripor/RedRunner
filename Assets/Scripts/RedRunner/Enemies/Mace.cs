@@ -76,9 +76,6 @@ namespace RedRunner.Enemies
                 if (pressable)
                 {
                     Slam(position);
-                    Vector3 scale = character.transform.localScale;
-                    scale.y = m_MaulScale;
-                    character.transform.localScale = scale;
                 }
                 Kill(character);
             }

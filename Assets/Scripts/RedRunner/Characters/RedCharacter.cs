@@ -53,6 +53,8 @@ namespace RedRunner.Characters
         protected Skeleton m_Skeleton;
         [SerializeField]
         protected float m_RollForce = 10f;
+        [SerializeField]
+        protected GameObject m_FakePlayer;
 
         [Header("Character Audio")]
         [Space]
@@ -354,6 +356,7 @@ namespace RedRunner.Characters
                 }
                 m_Rigidbody2D.AddForce(force);
             }
+            m_FakePlayer.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z - 0.1f);
         }
 
         void LateUpdate()
@@ -485,7 +488,7 @@ namespace RedRunner.Characters
         public override void Die(bool blood)
         {
             m_Lives--;
-            if(OnHeartLoss != null)
+            if (OnHeartLoss != null)
                 OnHeartLoss();
             if (m_Lives > 0)
             {
@@ -494,7 +497,7 @@ namespace RedRunner.Characters
                 // Place the character back when he dies
                 this.transform.position = new Vector2(bl.transform.position.x + bl.Restart_X, bl.transform.position.y + bl.Restart_Y);
             }
-            else if(!IsDead.Value)
+            else if (!IsDead.Value)
             {
                 IsDead.Value = true;
                 m_Skeleton.SetActive(true, m_Rigidbody2D.velocity);
