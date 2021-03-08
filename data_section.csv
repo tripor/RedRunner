@@ -1,0 +1,6 @@
+unique_identifier;session_id;section;total_coins;captured_coins;easy_captured_coins;hard_captured_coins;chest_normals;chest_hard;total_time;total_time_gained;lives_lost;lives_lost_water;lives_lost_static;lives_lost_moving;best_score;end_score;player_backtracked;jumps;average_velocity
+3d1b0cc0d45a7e4a3990e180f66c7c522485744b;15;Start;380;2;2;0;0;0;5.950157;2;0;0;0;0;541.6805;35.88493;False;1;4.85183
+3d1b0cc0d45a7e4a3990e180f66c7c522485744b;15;Middle_8;389;9;9;0;0;0;50.81649;9;0;0;0;0;541.6805;309.807;False;21;5.348949
+3d1b0cc0d45a7e4a3990e180f66c7c522485744b;15;Middle_2;393;4;4;0;0;0;28.37118;4;1;0;1;0;541.6805;348.2252;True;14;2.13431
+3d1b0cc0d45a7e4a3990e180f66c7c522485744b;15;Middle_13;397;4;4;0;0;0;33.55601;4;0;0;0;0;541.6805;642.632;False;4;8.755959
+3d1b0cc0d45a7e4a3990e180f66c7c522485744b;15;Middle_6;397;0;0;0;0;0;25.67031;0;2;0;0;2;700.6088;700.6088;False;11;4.252717

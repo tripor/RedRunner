@@ -71,8 +71,8 @@ public class ImageSynthesis : MonoBehaviour
     void LateUpdate()
     {
 #if UNITY_EDITOR
-        OnSceneChange();
 #endif // UNITY_EDITOR
+        OnSceneChange();
 
         // @TODO: detect if camera properties actually changed
         //OnCameraChange();

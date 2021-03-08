@@ -70,8 +70,13 @@ namespace RedRunner.Characters
         public abstract void Jump();
 
         public abstract void Die();
-
-        public abstract void Die(bool blood);
+        /// <summary>
+        /// The character dies
+        /// cause: 0-water,1-static,2-moving
+        /// </summary>
+        /// <param name="blood"></param>
+        /// <param name="cause"></param>
+        public abstract void Die(bool blood, int cause);
 
         public abstract void EmitRunParticle();
 

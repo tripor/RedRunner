@@ -92,7 +92,7 @@ namespace RedRunner.Enemies
         public override void Kill(Character target)
         {
             m_PathFollower.Stopped = true;
-            target.Die(true);
+            target.Die(true, 2);
             m_Animator.SetTrigger("Smile");
             AudioManager.Singleton.PlaySpikeSound(transform.position);
         }

@@ -300,7 +300,7 @@ namespace RedRunner.Characters
 
             if (transform.position.y < 0f)
             {
-                Die();
+                Die(false, 0);
             }
 
             // Speed
@@ -469,6 +469,7 @@ namespace RedRunner.Characters
             {
                 if (m_GroundCheck.IsGrounded)
                 {
+                    GameManager.Singleton.CharacterJump();
                     Vector2 velocity = m_Rigidbody2D.velocity;
                     velocity.y = m_JumpStrength;
                     m_Rigidbody2D.velocity = velocity;
@@ -482,11 +483,12 @@ namespace RedRunner.Characters
 
         public override void Die()
         {
-            Die(false);
+            Die(false, 0);
         }
 
-        public override void Die(bool blood)
+        public override void Die(bool blood, int cause)
         {
+            GameManager.Singleton.LiveLost(cause);
             m_Lives--;
             if (OnHeartLoss != null)
                 OnHeartLoss();

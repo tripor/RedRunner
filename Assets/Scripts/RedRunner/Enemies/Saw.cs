@@ -24,6 +24,8 @@ namespace RedRunner.Enemies
         private AudioClip m_SawingSound;
         [SerializeField]
         private AudioSource m_AudioSource;
+        [SerializeField]
+        private bool moving;
 
         public override Collider2D Collider2D
         {
@@ -93,7 +95,7 @@ namespace RedRunner.Enemies
 
         public override void Kill(Character target)
         {
-            target.Die(true);
+            target.Die(true, this.moving ? 2 : 1);
         }
 
     }

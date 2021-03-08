@@ -285,6 +285,7 @@ namespace RedRunner.TerrainGeneration
             }
             blockPrefab.PreGenerate(this);
             Block block = Instantiate<Block>(blockPrefab, position, Quaternion.identity);
+            block.name = blockPrefab.name;
             m_PreviousX = m_CurrentX;
             m_CurrentX += block.Width;
             m_Blocks.Add(position, block);
@@ -329,6 +330,19 @@ namespace RedRunner.TerrainGeneration
                 }
             }
             return characterBlock;
+        }
+        public float GetCharacterBlockPositionX()
+        {
+            float character_block_position_x = 0;
+            foreach (KeyValuePair<Vector3, Block> block in m_Blocks)
+            {
+                if (block.Key.x <= m_Character.transform.position.x && block.Key.x + block.Value.Width > m_Character.transform.position.x)
+                {
+                    character_block_position_x = block.Key.x;
+                    break;
+                }
+            }
+            return character_block_position_x;
         }
 
         public static Block ChooseFrom(Block[] blocks)

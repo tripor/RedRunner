@@ -19,6 +19,8 @@ namespace RedRunner.Collectables
         protected Animator m_Animator;
         [SerializeField]
         protected bool m_UseOnTriggerEnter2D = true;
+        [SerializeField]
+        protected bool hard = false;
 
         public override SpriteRenderer SpriteRenderer
         {
@@ -56,6 +58,19 @@ namespace RedRunner.Collectables
             }
         }
 
+
+        public bool Hard
+        {
+            get
+            {
+                return m_SpriteRenderer;
+            }
+            set
+            {
+                hard = value;
+            }
+        }
+
         public override void OnTriggerEnter2D(Collider2D other)
         {
             Character character = other.GetComponent<Character>();
@@ -77,6 +92,7 @@ namespace RedRunner.Collectables
         public override void Collect()
         {
             GameManager.Singleton.m_Coin.Value++;
+            GameManager.Singleton.CoinCollection(hard);
             m_Animator.SetTrigger(COLLECT_TRIGGER);
             m_ParticleSystem.Play();
             m_SpriteRenderer.enabled = false;

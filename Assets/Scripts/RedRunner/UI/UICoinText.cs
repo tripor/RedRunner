@@ -7,25 +7,26 @@ using System;
 
 namespace RedRunner.UI
 {
-	public class UICoinText : UIText
-	{
-		[SerializeField]
-		protected string m_CoinTextFormat = "x {0}";
-
-		protected override void Awake ()
-		{
-			base.Awake ();
-		}
-
-        protected override void Start()
-        {
-            GameManager.Singleton.m_Coin.AddEventAndFire(UpdateCoinsText, this);
-        }
+    public class UICoinText : UIText
+    {
+        [SerializeField]
+        protected string m_CoinTextFormat = "x {0}";
 
         private void UpdateCoinsText(int newCoinValue)
         {
             GetComponent<Animator>().SetTrigger("Collect");
             text = string.Format(m_CoinTextFormat, newCoinValue);
         }
-	}
+
+        protected override void Awake()
+        {
+            base.Awake();
+        }
+
+        protected override void Start()
+        {
+            GameManager.Singleton.m_Coin.AddEventAndFire(UpdateCoinsText, this);
+        }
+
+    }
 }
