@@ -9,6 +9,8 @@ namespace GameAI
     public class PlayerWatcher : Agent
     {
         private bool is_game_running = false;
+        [SerializeField]
+        private RedRunner.Characters.Character m_character;
         public override void Initialize()
         {
             Debug.Log("Init");
@@ -17,7 +19,12 @@ namespace GameAI
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            base.CollectObservations(sensor);
+            sensor.AddObservation(RedRunner.GameManager.Singleton.m_Coin.Value);
+            sensor.AddObservation(RedRunner.GameManager.Singleton.coinsGame);
+            sensor.AddObservation(m_character.Lives);
+            sensor.AddObservation(RedRunner.GameManager.Singleton.currentScore);
+            sensor.AddObservation(RedRunner.GameManager.Singleton.bestScore);
+            sensor.AddObservation(RedRunner.GameManager.Singleton.currentGameTime);
         }
 
         public override void OnActionReceived(float[] vectorAction)

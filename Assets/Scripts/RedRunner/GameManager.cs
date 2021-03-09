@@ -147,6 +147,41 @@ namespace RedRunner
                 return m_AudioEnabled;
             }
         }
+        public int coinsGame
+        {
+            get
+            {
+                return coins_game;
+            }
+        }
+        public float currentScore
+        {
+            get
+            {
+                return m_Score;
+            }
+        }
+        public float bestScore
+        {
+            get
+            {
+                return m_HighScore;
+            }
+        }
+        public float totalGameTime
+        {
+            get
+            {
+                return total_time_game;
+            }
+        }
+        public float currentGameTime
+        {
+            get
+            {
+                return m_Timer;
+            }
+        }
         #endregion
 
         public float Timer
