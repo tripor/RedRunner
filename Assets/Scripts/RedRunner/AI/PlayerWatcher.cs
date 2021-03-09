@@ -25,6 +25,9 @@ namespace GameAI
             sensor.AddObservation(RedRunner.GameManager.Singleton.currentScore);
             sensor.AddObservation(RedRunner.GameManager.Singleton.bestScore);
             sensor.AddObservation(RedRunner.GameManager.Singleton.currentGameTime);
+            if (m_character.InputType == -1) sensor.AddObservation(0);
+            else sensor.AddObservation(m_character.InputType);
+            m_character.InputType = -1;
         }
 
         public override void OnActionReceived(float[] vectorAction)
@@ -34,6 +37,11 @@ namespace GameAI
 
         public override void Heuristic(float[] actionsOut)
         {
+        }
+
+        public void endGame()
+        {
+            EndEpisode();
         }
 
         public override void OnEpisodeBegin()

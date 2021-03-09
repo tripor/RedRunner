@@ -84,6 +84,7 @@ namespace RedRunner.Characters
         protected Vector3 m_InitialScale;
         protected Vector3 m_InitialPosition;
         protected int m_Lives = 3;
+        protected int input_type = -1;
 
         #endregion
 
@@ -272,6 +273,17 @@ namespace RedRunner.Characters
                 return m_Lives;
             }
         }
+        public override int InputType
+        {
+            get
+            {
+                return input_type;
+            }
+            set
+            {
+                this.input_type = value;
+            }
+        }
 
         #endregion
 
@@ -314,9 +326,19 @@ namespace RedRunner.Characters
             }
 
             // Input Processing
-            Move(CrossPlatformInputManager.GetAxis("Horizontal"));
+            float input_horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
+            if (input_type < 3)
+            {
+                if (input_horizontal == 0) input_type = 0;
+                else if (input_horizontal < 0) input_type = 1;
+                else if (input_horizontal > 0) input_type = 2;
+            }
+            Move(input_horizontal);
             if (CrossPlatformInputManager.GetButtonDown("Jump"))
             {
+                if (input_horizontal == 0) input_type = 3;
+                else if (input_horizontal < 0) input_type = 4;
+                else if (input_horizontal > 0) input_type = 5;
                 Jump();
             }
             if (IsDead.Value && !m_ClosingEye)

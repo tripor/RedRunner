@@ -58,6 +58,9 @@ namespace RedRunner
         private bool m_GameRunning = false;
         private bool m_AudioEnabled = true;
 
+        [SerializeField]
+        private GameAI.PlayerWatcher m_PlayerAi;
+
         #region Analitics
 
         private Block current_block;
@@ -364,6 +367,11 @@ namespace RedRunner
 
         private void WriteCsvSection(Block section)
         {
+            // if something goes really wrong
+            if (section == null)
+            {
+                section = TerrainGenerator.Singleton.GetCharacterBlock();
+            }
             object[] outputarray = new object[] { SystemInfo.deviceUniqueIdentifier, game_id, section.name, m_Coin.Value, coins_section, coins_easy_section, coins_hard_section, chest_normal_section, chest_hard_section, total_time_section, total_time_gained_section, lives_lost_section, lives_lost_enemy_water_section, lives_lost_enemy_static_section, lives_lost_enemy_moving_section, m_HighScore, m_Score, player_backtracked_section, jumps_section, average_velocity_section };
             StringBuilder sbOutput = new StringBuilder();
             sbOutput.Append(string.Join(";", outputarray));
@@ -415,6 +423,12 @@ namespace RedRunner
         {
             if (m_GameRunning)
             {
+                // The current_block is not generated fast enough when the player retrys, so we need to check if we have the current block
+                if (this.current_block == null)
+                {
+                    this.current_block = TerrainGenerator.Singleton.GetCharacterBlock();
+                    this.current_block_position = TerrainGenerator.Singleton.GetCharacterBlockPositionX();
+                }
                 if (m_MainCharacter.transform.position.x > m_StartScoreX && m_MainCharacter.transform.position.x > m_Score)
                 {
                     m_Score = m_MainCharacter.transform.position.x;
@@ -589,6 +603,7 @@ namespace RedRunner
                 if (player_backtracked_section) this.player_backtracked_game++;
                 WriteCsvSection(this.current_block);
                 WriteCsvGame();
+                m_PlayerAi.endGame();
             }
             m_GameStarted = false;
             StopGame();
