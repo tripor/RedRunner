@@ -45,3 +45,4 @@ except:
     print("Game closed")
 np.save('data.npy', data)
 env.close()
+# TOdo ver o ficheiro se já existe

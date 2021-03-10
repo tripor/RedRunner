@@ -11,6 +11,15 @@ namespace GameAI
         private bool is_game_running = false;
         [SerializeField]
         private RedRunner.Characters.Character m_character;
+        private float next_movement;
+
+        public int NextMovement
+        {
+            get
+            {
+                return (int)this.next_movement;
+            }
+        }
         public override void Initialize()
         {
             Debug.Log("Init");
@@ -32,7 +41,7 @@ namespace GameAI
 
         public override void OnActionReceived(float[] vectorAction)
         {
-            base.OnActionReceived(vectorAction);
+            this.next_movement = vectorAction[0];
         }
 
         public override void Heuristic(float[] actionsOut)

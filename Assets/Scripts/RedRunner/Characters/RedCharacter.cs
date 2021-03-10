@@ -30,6 +30,10 @@ namespace RedRunner.Characters
         protected string[] m_Actions = new string[0];
         [SerializeField]
         protected int m_CurrentActionIndex = 0;
+        [SerializeField]
+        protected bool simulate_player = false;
+        [SerializeField]
+        protected GameAI.PlayerWatcher playerAi;
 
         [Header("Character Reference")]
         [Space]
@@ -326,20 +330,41 @@ namespace RedRunner.Characters
             }
 
             // Input Processing
-            float input_horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            if (input_type < 3)
+            if (simulate_player)
             {
-                if (input_horizontal == 0) input_type = 0;
-                else if (input_horizontal < 0) input_type = 1;
-                else if (input_horizontal > 0) input_type = 2;
+                int movement = playerAi.NextMovement;
+                if (movement == 1 || movement == 4)
+                {
+                    Move(-1);
+                    Jump();
+                }
+                else if (movement == 2 || movement == 5)
+                {
+                    Move(1);
+                    Jump();
+                }
+                else if (movement == 3)
+                {
+                    Jump();
+                }
             }
-            Move(input_horizontal);
-            if (CrossPlatformInputManager.GetButtonDown("Jump"))
+            else
             {
-                if (input_horizontal == 0) input_type = 3;
-                else if (input_horizontal < 0) input_type = 4;
-                else if (input_horizontal > 0) input_type = 5;
-                Jump();
+                float input_horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
+                if (input_type < 3)
+                {
+                    if (input_horizontal == 0) input_type = 0;
+                    else if (input_horizontal < 0) input_type = 1;
+                    else if (input_horizontal > 0) input_type = 2;
+                }
+                Move(input_horizontal);
+                if (CrossPlatformInputManager.GetButtonDown("Jump"))
+                {
+                    if (input_horizontal == 0) input_type = 3;
+                    else if (input_horizontal < 0) input_type = 4;
+                    else if (input_horizontal > 0) input_type = 5;
+                    Jump();
+                }
             }
             if (IsDead.Value && !m_ClosingEye)
             {
