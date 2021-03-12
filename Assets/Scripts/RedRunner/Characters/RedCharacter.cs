@@ -289,6 +289,13 @@ namespace RedRunner.Characters
             }
         }
 
+        public override bool PlayerAiTraining
+        {
+            get
+            {
+                return playerAi;
+            }
+        }
         #endregion
 
         #region MonoBehaviour Messages

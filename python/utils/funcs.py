@@ -1,10 +1,16 @@
 import numpy as np
 import torch
 
+if torch.cuda.is_available():
+    from torch.cuda import FloatTensor
+    torch.set_default_tensor_type(torch.cuda.FloatTensor)
+else:
+    from torch import FloatTensor
+
 
 def get_flat_grads(f, net):
     flat_grads = torch.cat([
-        grad.view(-1)
+        grad.reshape(-1)
         for grad in torch.autograd.grad(f, net.parameters(), create_graph=True)
     ])
 
@@ -12,7 +18,7 @@ def get_flat_grads(f, net):
 
 
 def get_flat_params(net):
-    return torch.cat([param.view(-1) for param in net.parameters()])
+    return torch.cat([param.reshape(-1) for param in net.parameters()])
 
 
 def set_params(net, new_flat_params):

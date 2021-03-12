@@ -1,4 +1,4 @@
-from utils.environment import load_environment_editor
+from utils.environment import load_environment
 from mlagents_envs.environment import UnityEnvironment
 import numpy as np
 import torch
@@ -21,13 +21,15 @@ class GAIL:
         state_dim,
         action_dim,
         discrete,
-        train_config=None
+        train_config=None,
+        save_path='./model.ckpt'
     ):
         self.image_dim = image_dim
         self.state_dim = state_dim
         self.action_dim = action_dim
         self.discrete = discrete
         self.train_config = train_config
+        self.save_path = save_path
 
         self.pi = PolicyNetwork(
             self.image_dim, self.state_dim, self.action_dim, self.discrete)
@@ -35,6 +37,8 @@ class GAIL:
 
         self.d = Discriminator(
             self.image_dim, self.state_dim, self.action_dim, self.discrete)
+
+        self.opt_d = torch.optim.Adam(self.d.parameters())
 
         if torch.cuda.is_available():
             for net in self.get_networks():
@@ -48,12 +52,30 @@ class GAIL:
 
         image = FloatTensor(image)
         obs_scalar = FloatTensor(obs)
-        print("Policy predicting act")
         distb = self.pi(image.unsqueeze(0), obs_scalar.unsqueeze(0))
 
         action = distb.sample().detach().cpu().numpy()
 
         return action
+
+    def save(self, path):
+        torch.save({
+            'policy_network_state_dict': self.pi.state_dict(),
+            'value_network_state_dict': self.v.state_dict(),
+            'discriminator_network_state_dict': self.d.state_dict(),
+            'discriminator_network_optimizer_state_dict': self.opt_d.state_dict(),
+        }, path)
+
+    def load(self, path):
+        loaded = torch.load(path)
+        self.pi.load_state_dict(loaded['policy_network_state_dict'])
+        self.v.load_state_dict(loaded['value_network_state_dict'])
+        self.d.load_state_dict(loaded['discriminator_network_state_dict'])
+        self.opt_d.load_state_dict(
+            loaded['discriminator_network_optimizer_state_dict'])
+        if torch.cuda.is_available():
+            for net in self.get_networks():
+                net.to(torch.device("cuda"))
 
     def train(self, env: UnityEnvironment, expert_observations, render=False):
         num_iters = self.train_config["num_iters"]
@@ -67,8 +89,6 @@ class GAIL:
         cg_damping = self.train_config["cg_damping"]
         normalize_advantage = self.train_config["normalize_advantage"]
 
-        opt_d = torch.optim.Adam(self.d.parameters())
-
         print("Tranforming demonstrations")
         exp_obs = [at for at in expert_observations[:, 1]]
         exp_images = [at for at in expert_observations[:, 0]]
@@ -81,7 +101,7 @@ class GAIL:
 
         # Main training
         for i in range(num_iters):
-            print("Main Training")
+            print("Iteration {}".format(i))
             obs = []
             images = []
             acts = []
@@ -101,9 +121,7 @@ class GAIL:
 
                 t = 0
                 done = False
-
                 while not done:
-                    print("Making a step")
                     behaviour_names = list(env.behavior_specs.keys())
                     behaviour_specs = list(env.behavior_specs.values())
                     for name in behaviour_names:
@@ -125,11 +143,11 @@ class GAIL:
                                     # Save the observations (image and scalar values)
                                     ep_obs.append(obs_scalar)
                                     ep_images.append(image)
-                                    obs.append(obs_scalar)
-                                    images.append(image)
                                     # Save the actions taken
-                                    ep_acts.append(act)
-                                    acts.append(act)
+                                    ep_acts.append(act[0])
+                                    ep_gms.append(gae_gamma ** t)
+                                    ep_lmbs.append(gae_lambda ** t)
+                                    t += 1
                             if len(terminal_steps) == 1:
                                 done = True
                                 for agent_id in terminal_steps.agent_id:
@@ -137,12 +155,15 @@ class GAIL:
                                     image = observation[0]
                                     obs_scalar = observation[1][0:6]
                     env.step()
-                    ep_gms.append(gae_gamma ** t)
-                    ep_lmbs.append(gae_lambda ** t)
+                    if not done:
+                        steps += 1
 
-                    t += 1
-                    steps += 1
-
+                if len(ep_obs) < 20:
+                    continue
+                for i in range(len(ep_obs)):
+                    obs.append(ep_obs[i])
+                    images.append(ep_images[i])
+                    acts.append(ep_acts[i])
                 ep_obs = FloatTensor(ep_obs)
                 ep_images = FloatTensor(ep_images)
                 ep_acts = FloatTensor(np.array(ep_acts))
@@ -177,22 +198,25 @@ class GAIL:
 
                 gms.append(ep_gms)
 
+            # Training
+            print("Training networks")
             obs = FloatTensor(obs)
             images = FloatTensor(images)
             acts = FloatTensor(np.array(acts))
-            rets = torch.cat(rets)
-            advs = torch.cat(advs)
-            gms = torch.cat(gms)
+            rets = torch.cat(rets).cuda()
+            advs = torch.cat(advs).cuda()
+            gms = torch.cat(gms).cuda()
 
             if normalize_advantage:
                 advs = (advs - advs.mean()) / advs.std()
 
+            print("Training discriminator network")
             # Train the discriminator
             self.d.train()
             exp_scores = self.d.get_logits(exp_images, exp_obs, exp_acts)
             nov_scores = self.d.get_logits(images, obs, acts)
 
-            opt_d.zero_grad()
+            self.opt_d.zero_grad()
             loss = torch.nn.functional.binary_cross_entropy_with_logits(
                 exp_scores, torch.zeros_like(exp_scores)
             ) \
@@ -200,8 +224,9 @@ class GAIL:
                     nov_scores, torch.ones_like(nov_scores)
             )
             loss.backward()
-            opt_d.step()
+            self.opt_d.step()
 
+            print("Training value network")
             # Train the Value network
             self.v.train()
             old_params = get_flat_params(self.v).detach()
@@ -230,6 +255,7 @@ class GAIL:
 
             set_params(self.v, new_params)
 
+            print("Training policy network")
             # Train the Policy network
             self.pi.train()
             old_params = get_flat_params(self.pi).detach()
@@ -241,7 +267,7 @@ class GAIL:
                 return (advs * torch.exp(
                     distb.log_prob(acts)
                     - old_distb.log_prob(acts).detach()
-                )).mean()
+                ).cuda()).mean()
 
             def kld():
                 distb = self.pi(images, obs)
@@ -296,10 +322,13 @@ class GAIL:
 
             set_params(self.pi, new_params)
 
+            if i % 10 == 0:
+                self.save(self.save_path)
+
         return
 
 
-env = load_environment_editor()
+env = load_environment(graphics=False)
 env.reset()
 
 demonstrations = np.load('data.npy', allow_pickle=True)
@@ -319,5 +348,5 @@ model = GAIL(image_dim, obs_dim, action_dim, True, {
     "max_kl": 0.01,
     "cg_damping": 0.1,
     "normalize_advantage": True
-})
+}, './model.ckpt')
 model.train(env, demonstrations)

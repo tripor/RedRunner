@@ -38,12 +38,21 @@ namespace RedRunner
         private Texture2D m_CursorClickTexture;
         [SerializeField]
         private float m_CursorHideDelay = 1f;
+        [SerializeField]
+        private bool playerAi = false;
 
         public List<UIScreen> UISCREENS
         {
             get
             {
                 return m_Screens;
+            }
+        }
+        public bool PlayerAiTraining
+        {
+            get
+            {
+                return playerAi;
             }
         }
 
@@ -85,7 +94,7 @@ namespace RedRunner
                 //If the pause screen is not open : open it otherwise close it
                 if (!pauseScreen.IsOpen)
                 {
-                    if(m_ActiveScreen == ingameScreen)
+                    if (m_ActiveScreen == ingameScreen)
                     {
                         if (IsAsScreenOpen())
                             CloseAllScreens();
@@ -94,7 +103,7 @@ namespace RedRunner
                         GameManager.Singleton.StopGame();
                     }
                 }
-                else 
+                else
                 {
                     if (m_ActiveScreen == pauseScreen)
                     {

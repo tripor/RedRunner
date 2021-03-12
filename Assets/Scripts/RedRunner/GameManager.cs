@@ -223,8 +223,7 @@ namespace RedRunner
             SaveGame.Serializer = new SaveGameBinarySerializer();
             m_Singleton = this;
             m_Score = 0f;
-
-            if (SaveGame.Exists("coin"))
+            if (SaveGame.Exists("coin") && !m_MainCharacter.PlayerAiTraining)
             {
                 m_Coin.Value = SaveGame.Load<int>("coin");
             }
@@ -248,7 +247,7 @@ namespace RedRunner
             {
                 SetAudioEnabled(true);
             }
-            if (SaveGame.Exists("lastScore"))
+            if (SaveGame.Exists("lastScore") && !m_MainCharacter.PlayerAiTraining)
             {
                 m_LastScore = SaveGame.Load<float>("lastScore");
             }
@@ -256,7 +255,7 @@ namespace RedRunner
             {
                 m_LastScore = 0f;
             }
-            if (SaveGame.Exists("highScore"))
+            if (SaveGame.Exists("highScore") && !m_MainCharacter.PlayerAiTraining)
             {
                 m_HighScore = SaveGame.Load<float>("highScore");
             }
@@ -400,12 +399,22 @@ namespace RedRunner
             yield return new WaitForSecondsRealtime(wait_time);
 
             EndGame(true);
-            var endScreen = UIManager.Singleton.UISCREENS.Find(el => el.ScreenInfo == UIScreenInfo.END_SCREEN);
-            UIManager.Singleton.OpenScreen(endScreen);
+            if (m_MainCharacter.PlayerAiTraining)
+            {
+                Reset();
+                StartGame();
+            }
+            else
+            {
+                var endScreen = UIManager.Singleton.UISCREENS.Find(el => el.ScreenInfo == UIScreenInfo.END_SCREEN);
+                UIManager.Singleton.OpenScreen(endScreen);
+            }
         }
 
         private void Start()
         {
+            if (m_MainCharacter.PlayerAiTraining)
+                Application.runInBackground = true;
             m_MainCharacter.IsDead.AddEventAndFire(UpdateDeathEvent, this);
             m_StartScoreX = m_MainCharacter.transform.position.x;
             Init();
@@ -414,7 +423,8 @@ namespace RedRunner
         public void Init()
         {
             EndGame(false);
-            UIManager.Singleton.Init();
+            if (!m_MainCharacter.PlayerAiTraining)
+                UIManager.Singleton.Init();
             StartCoroutine(Load());
             m_Timer = max_game_time;
         }
@@ -497,9 +507,19 @@ namespace RedRunner
 
         IEnumerator Load()
         {
-            var startScreen = UIManager.Singleton.UISCREENS.Find(el => el.ScreenInfo == UIScreenInfo.START_SCREEN);
-            yield return new WaitForSecondsRealtime(3f);
-            UIManager.Singleton.OpenScreen(startScreen);
+            if (m_MainCharacter.PlayerAiTraining)
+            {
+                var ingame = UIManager.Singleton.UISCREENS.Find(el => el.ScreenInfo == UIScreenInfo.IN_GAME_SCREEN);
+                yield return new WaitForSecondsRealtime(3f);
+                UIManager.Singleton.OpenScreen(ingame);
+                StartGame();
+            }
+            else
+            {
+                var startScreen = UIManager.Singleton.UISCREENS.Find(el => el.ScreenInfo == UIScreenInfo.START_SCREEN);
+                yield return new WaitForSecondsRealtime(3f);
+                UIManager.Singleton.OpenScreen(startScreen);
+            }
         }
 
         void OnApplicationQuit()
@@ -580,6 +600,11 @@ namespace RedRunner
             this.jumps_section = 0;
             this.average_velocity_section = 0;
             this.average_velocity_section_i = 0;
+            if (m_MainCharacter.PlayerAiTraining)
+            {
+                m_Coin.Value = 0;
+                m_HighScore = 0;
+            }
             live_lost = false;
             ResumeGame();
         }
@@ -593,7 +618,10 @@ namespace RedRunner
         public void ResumeGame()
         {
             m_GameRunning = true;
-            Time.timeScale = 1f;
+            if (m_MainCharacter.PlayerAiTraining)
+                Time.timeScale = 10f;
+            else
+                Time.timeScale = 1f;
         }
 
         public void EndGame(bool save)

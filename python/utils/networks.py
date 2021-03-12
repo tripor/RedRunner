@@ -10,7 +10,7 @@ else:
 from torch import nn
 
 
-class PolicyNetwork(torch.nn.Module):
+class PolicyNetwork(nn.Module):
     def __init__(self, image_dim, state_dim, action_dim, discrete):
         super(PolicyNetwork, self).__init__()
         c, h, w = image_dim
@@ -61,7 +61,7 @@ class PolicyNetwork(torch.nn.Module):
         return distb
 
 
-class ValueNetwork(torch.nn.Module):
+class ValueNetwork(nn.Module):
     def __init__(self, image_dim, state_dim):
         super(ValueNetwork, self).__init__()
         c, h, w = image_dim
@@ -93,7 +93,7 @@ class ValueNetwork(torch.nn.Module):
         return self.net(x)
 
 
-class Discriminator(torch.nn.Module):
+class Discriminator(nn.Module):
     def __init__(self, image_dim, state_dim, action_dim, discrete):
         super(Discriminator, self).__init__()
 
@@ -139,7 +139,6 @@ class Discriminator(torch.nn.Module):
     def get_logits(self, image, state, actions):
         x1 = self.cnn(image.permute(0, 3, 1, 2))
         x = torch.cat((x1, state), dim=1)
-
         if self.discrete:
             actions = self.act_emb(actions.long())
 
