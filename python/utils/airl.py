@@ -14,7 +14,7 @@ class AIRL(PPO):
                  batch_size=64, lr_actor=3e-4, lr_critic=3e-4, lr_disc=3e-4,
                  epoch_ppo=50, epoch_disc=10, clip_eps=0.2, lambd=0.97,
                  coef_ent=0.0, max_grad_norm=10.0):
-        super().__init__(state_shape, action_shape, device, seed, gamma, rollout_length,
+        super().__init__(image_shape, state_shape, action_shape, device, seed, gamma, rollout_length,
                          mix_buffer, lr_actor, lr_critic, epoch_ppo, clip_eps, lambd, coef_ent, max_grad_norm)
 
         # Expert's buffer.
@@ -42,7 +42,7 @@ class AIRL(PPO):
             images, states, _, _, dones, log_pis, next_images, next_states = self.buffer.sample(
                 self.batch_size)
             # Samples from expert's demonstrations.
-            images_exp, states_exp, actions_exp, _, dones_exp, next_images_exp, next_states_exp = self.buffer_exp.sample(
+            images_exp, states_exp, actions_exp, _, dones_exp, _, next_images_exp, next_states_exp = self.buffer_exp.sample(
                 self.batch_size)
             # Calculate log probabilities of expert actions.
             with torch.no_grad():

@@ -619,7 +619,7 @@ namespace RedRunner
         {
             m_GameRunning = true;
             if (m_MainCharacter.PlayerAiTraining)
-                Time.timeScale = 10f;
+                Time.timeScale = m_MainCharacter.TimeScaleSpeed;
             else
                 Time.timeScale = 1f;
         }

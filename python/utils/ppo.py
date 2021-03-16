@@ -89,7 +89,7 @@ class PPO(Algorithm):
                         action, log_pi = self.explore(image, state)
                         # Set the action to the agent
                         env.set_action_for_agent(
-                            behavior_name=name, agent_id=agent_id, action=np.array([action]))
+                            behavior_name=name, agent_id=agent_id, action=np.array([[action]]))
                 if len(terminal_steps) == 1:
                     done = True
                     for agent_id in terminal_steps.agent_id:
@@ -98,7 +98,7 @@ class PPO(Algorithm):
                         state = observation[1][0:6]
                         action, log_pi = self.explore(image, state)
         env.step()
-        if step != 1 and not before_done:
+        if step != 0 and not before_done:
             self.buffer.append(before_image, before_state,
                                before_action, 0, done, log_pi, image, state)
 
@@ -140,7 +140,7 @@ class PPO(Algorithm):
 
     def update_actor(self, images, states, actions, log_pis_old, gaes, writer):
         log_pis = self.actor.evaluate_log_pi(images, states, actions)
-        entropy = -log_pis.mean()
+        entropy = -log_pis.mean()  # entropy mudar
 
         ratios = (log_pis - log_pis_old).exp_()
         loss_actor1 = -ratios * gaes

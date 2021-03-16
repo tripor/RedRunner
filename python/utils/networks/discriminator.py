@@ -7,8 +7,9 @@ class AIRLDiscrim(nn.Module):
 
     def __init__(self, image_shape, state_shape, gamma):
         super().__init__()
+        state_shape = state_shape[0]
 
-        c, h, w = image_shape
+        h, w, c = image_shape
 
         self.g_cnn = nn.Sequential(
             nn.Conv2d(in_channels=c, out_channels=32,
@@ -58,13 +59,13 @@ class AIRLDiscrim(nn.Module):
     def f(self, images, states, dones, next_images, next_states):
         g1 = self.g_cnn(images.permute(0, 3, 1, 2))
         g_state = torch.cat((g1, states), dim=1)
-        rs = self.g(g_state)
+        rs = self.g_net(g_state)
         h1 = self.h_cnn(images.permute(0, 3, 1, 2))
         h_state = torch.cat((h1, states), dim=1)
-        vs = self.h(h_state)
+        vs = self.h_net(h_state)
         h2 = self.h_cnn(next_images.permute(0, 3, 1, 2))
         h2_state = torch.cat((h2, next_states), dim=1)
-        next_vs = self.h(h2_state)
+        next_vs = self.h_net(h2_state)
         return rs + self.gamma * (1 - dones) * next_vs - vs
 
     def forward(self, images, states, dones, log_pis, next_images, next_states):

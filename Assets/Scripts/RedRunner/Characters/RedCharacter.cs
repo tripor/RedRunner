@@ -34,6 +34,8 @@ namespace RedRunner.Characters
         protected bool simulate_player = false;
         [SerializeField]
         protected GameAI.PlayerWatcher playerAi;
+        [SerializeField]
+        protected float timescale_speed = 2f;
 
         [Header("Character Reference")]
         [Space]
@@ -293,7 +295,14 @@ namespace RedRunner.Characters
         {
             get
             {
-                return playerAi;
+                return simulate_player;
+            }
+        }
+        public override float TimeScaleSpeed
+        {
+            get
+            {
+                return timescale_speed;
             }
         }
         #endregion

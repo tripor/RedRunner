@@ -7,7 +7,7 @@ import torch
 class Algorithm(ABC):
 
     def __init__(self, image_shape, state_shape, action_shape, device, seed, gamma):
-        np.random.seed(seed)
+        np.random.seed(int(seed))
         torch.manual_seed(seed)
         torch.cuda.manual_seed(seed)
 
@@ -24,7 +24,7 @@ class Algorithm(ABC):
         with torch.no_grad():
             action, log_pi = self.actor.sample(
                 image.unsqueeze(0), state.unsqueeze_(0))
-        return action.cpu().numpy()[0], log_pi.item()
+        return action, log_pi.item()
 
     @abstractmethod
     def is_update(self, step):

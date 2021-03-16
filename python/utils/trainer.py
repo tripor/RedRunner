@@ -12,7 +12,6 @@ class Trainer:
 
         # Env to collect samples.
         self.env = env
-        self.env.seed(seed)
 
         self.algo = algo
         self.log_dir = log_dir
@@ -36,17 +35,25 @@ class Trainer:
         t = 0
         # Initialize the environment.
         state = self.env.reset()
-
-        for step in range(1, self.num_steps + 1):
+        image = None
+        state = None
+        action = None
+        done = False
+        step = 0
+        iteration = 0
+        while step < self.num_steps + 1:
             # Pass to the algorithm to update state and episode timestep.
             image, state, action, done, t = self.algo.step(
                 self.env, image, state, action, done, t, step)
 
             # Update the algorithm whenever ready.
-            if self.algo.is_update(step):
+            if step != 0 and self.algo.is_update(step):
+                iteration += 1
+                print("Iteration {}".format(iteration))
                 self.algo.update(self.writer)
-
-        # Wait for the logging to be finished.
+            if not done:
+                step += 1
+            # Wait for the logging to be finished.
         sleep(10)
 
     @property

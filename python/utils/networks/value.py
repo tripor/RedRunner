@@ -1,15 +1,14 @@
 import torch
 from torch import nn
 
-from ..util import build_mlp
-
 
 class StateFunction(nn.Module):
 
     def __init__(self, image_shape, state_shape):
         super().__init__()
+        state_shape = state_shape[0]
 
-        c, h, w = image_shape
+        h, w, c = image_shape
 
         self.cnn = nn.Sequential(
             nn.Conv2d(in_channels=c, out_channels=32,

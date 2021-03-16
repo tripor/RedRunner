@@ -1,10 +1,5 @@
 from utils.environment import load_environment_editor
-from mlagents_envs.environment import UnityEnvironment
 import numpy as np
-from matplotlib import pyplot as plt
-import gym
-from imitation.algorithms import adversarial
-from imitation.data import types
 
 
 env = load_environment_editor()
@@ -12,6 +7,7 @@ env = load_environment_editor()
 data = []
 env.reset()
 done = False
+first_on_episode = True
 try:
     while True:
         if done:
@@ -30,7 +26,6 @@ try:
                         obs_scalar = obs[1][0:6]
                         action = obs[1][6]
                         transition = [image, obs_scalar, action]
-                        data.append(transition)
                 if len(terminal_steps) == 1:
                     done = True
                     for agent_id in terminal_steps.agent_id:
@@ -39,8 +34,17 @@ try:
                         obs_scalar = obs[1][0:6]
                         action = obs[1][6]
                         transition = [image, obs_scalar, action]
-                        data.append(transition)
+        if first_on_episode:
+            first_on_episode = False
+        else:
+            transition = [last_image, last_obs, last_action, image, obs_scalar]
+            data.append(transition)
+        last_image = image
+        last_obs = obs_scalar
+        last_action = action
         env.step()
+        if done:
+            first_on_episode = True
 except:
     print("Game closed")
 np.save('data.npy', data)

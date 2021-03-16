@@ -44,7 +44,7 @@ class Buffer(SerializedBuffer):
         self.states = torch.empty(
             (buffer_size, *state_shape), dtype=torch.float, device=device)
         self.actions = torch.empty(
-            (buffer_size, *action_shape), dtype=torch.float, device=device)
+            (buffer_size, 1), dtype=torch.float, device=device)
         self.rewards = torch.empty(
             (buffer_size, 1), dtype=torch.float, device=device)
         self.dones = torch.empty(
@@ -57,7 +57,7 @@ class Buffer(SerializedBuffer):
     def append(self, image, state, action, reward, done, next_image, next_state):
         self.images[self._p].copy_(torch.from_numpy(image))
         self.states[self._p].copy_(torch.from_numpy(state))
-        self.actions[self._p].copy_(torch.from_numpy(action))
+        self.actions[self._p] = float(action)
         self.rewards[self._p] = float(reward)
         self.dones[self._p] = float(done)
         self.next_images[self._p].copy_(torch.from_numpy(next_image))
@@ -95,7 +95,7 @@ class RolloutBuffer:
         self.images = torch.empty(
             (self.total_size, *image_shape), dtype=torch.float, device=device)
         self.actions = torch.empty(
-            (self.total_size, *action_shape), dtype=torch.float, device=device)
+            (self.total_size, 1), dtype=torch.float, device=device)
         self.rewards = torch.empty(
             (self.total_size, 1), dtype=torch.float, device=device)
         self.dones = torch.empty(
@@ -110,7 +110,7 @@ class RolloutBuffer:
     def append(self, image, state, action, reward, done, log_pi, next_image, next_state):
         self.states[self._p].copy_(torch.from_numpy(state))
         self.images[self._p].copy_(torch.from_numpy(image))
-        self.actions[self._p].copy_(torch.from_numpy(action))
+        self.actions[self._p] = float(action)
         self.rewards[self._p] = float(reward)
         self.dones[self._p] = float(done)
         self.log_pis[self._p] = float(log_pi)

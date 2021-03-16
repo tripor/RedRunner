@@ -1,3 +1,5 @@
+import numpy as np
+from gym.spaces import Box
 import gym
-env = gym.make("CartPole-v1")
-print(env.action_space.n)
+env = gym.make("Acrobot-v1")
+print(10**6)

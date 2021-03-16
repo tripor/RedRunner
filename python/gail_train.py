@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from gym.spaces import Box, Discrete
 
-from utils.networks import PolicyNetwork, ValueNetwork, Discriminator
+from utils.networks_gail import PolicyNetwork, ValueNetwork, Discriminator
 from utils.funcs import get_flat_grads, get_flat_params, set_params, conjugate_gradient, rescale_and_linesearch
 
 if torch.cuda.is_available():
@@ -328,7 +328,7 @@ class GAIL:
         return
 
 
-env = load_environment(graphics=False)
+env = load_environment(graphics=True)
 env.reset()
 
 demonstrations = np.load('data.npy', allow_pickle=True)

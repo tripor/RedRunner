@@ -66,6 +66,7 @@ namespace RedRunner.Characters
         public abstract int Lives { get; }
         public abstract int InputType { get; set; }
         public abstract bool PlayerAiTraining { get; }
+        public abstract float TimeScaleSpeed { get; }
 
         public abstract void Move(float horizontalAxis);
 
