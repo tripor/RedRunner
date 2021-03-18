@@ -1,5 +1,5 @@
 from utils.trainer import Trainer
-from utils.airl import AIRL
+from utils.gail import GAIL
 from utils.buffer import RolloutBuffer
 from utils.environment import load_environment, load_environment_editor
 import numpy as np
@@ -24,8 +24,8 @@ for i in range(len(demonstrations)):
                       demonstrations[i][1], demonstrations[i][2], 0, 0, 0, demonstrations[i][3], demonstrations[i][4])
 
 
-algo = AIRL(buffer_exp=buffer_exp, image_shape=image_dim,
-            state_shape=obs_shape, action_shape=action_shape, device=device, seed=int(0), rollout_length=1000)
+algo = GAIL(buffer_exp=buffer_exp, image_shape=image_dim,
+            state_shape=obs_shape, action_shape=action_shape, device=device, seed=int(0), rollout_length=2000)
 time = datetime.now().strftime("%Y%m%d-%H%M")
 log_dir = os.path.join('logs', "RedRunner", f'seed-{time}')
 env = load_environment(True)

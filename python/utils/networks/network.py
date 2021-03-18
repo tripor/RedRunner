@@ -43,6 +43,13 @@ class ActorPolicy(nn.Module):
         x = torch.cat((x1, states), dim=1)
         return self.net(x)
 
+    def distribution(self, images, states):
+        x1 = self.cnn(images.permute(0, 3, 1, 2))
+        x = torch.cat((x1, states), dim=1)
+        action_probs = self.net(x)
+        dist = Categorical(action_probs)
+        return dist
+
     def sample(self, images, states):
         x1 = self.cnn(images.permute(0, 3, 1, 2))
         x = torch.cat((x1, states), dim=1)

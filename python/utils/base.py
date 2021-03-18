@@ -22,7 +22,7 @@ class Algorithm(ABC):
         state = torch.tensor(state, dtype=torch.float, device=self.device)
         image = torch.tensor(image, dtype=torch.float, device=self.device)
         with torch.no_grad():
-            action, log_pi = self.actor.sample(
+            action, log_pi = self.actor_old.sample(
                 image.unsqueeze(0), state.unsqueeze_(0))
         return action, log_pi.item()
 

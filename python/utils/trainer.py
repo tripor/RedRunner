@@ -34,23 +34,28 @@ class Trainer:
         # Episode's timestep.
         t = 0
         # Initialize the environment.
-        state = self.env.reset()
+        self.env.reset()
         image = None
         state = None
         action = None
         done = False
         step = 0
         iteration = 0
+        skip = False
         while step < self.num_steps + 1:
             # Pass to the algorithm to update state and episode timestep.
             image, state, action, done, t = self.algo.step(
                 self.env, image, state, action, done, t, step)
-
             # Update the algorithm whenever ready.
-            if step != 0 and self.algo.is_update(step):
+            if step != 0 and not skip and self.algo.is_update(step):
                 iteration += 1
                 print("Iteration {}".format(iteration))
                 self.algo.update(self.writer)
+                self.env.reset()
+                done = True
+                skip = True
+            elif skip:
+                skip = False
             if not done:
                 step += 1
             # Wait for the logging to be finished.

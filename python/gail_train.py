@@ -1,4 +1,4 @@
-from utils.environment import load_environment
+from utils.environment import load_environment, load_environment_editor
 from mlagents_envs.environment import UnityEnvironment
 import numpy as np
 import torch
@@ -65,6 +65,7 @@ class GAIL:
             'discriminator_network_state_dict': self.d.state_dict(),
             'discriminator_network_optimizer_state_dict': self.opt_d.state_dict(),
         }, path)
+        print("Model saved")
 
     def load(self, path):
         loaded = torch.load(path)
@@ -76,6 +77,7 @@ class GAIL:
         if torch.cuda.is_available():
             for net in self.get_networks():
                 net.to(torch.device("cuda"))
+        print("Model loaded")
 
     def train(self, env: UnityEnvironment, expert_observations, render=False):
         num_iters = self.train_config["num_iters"]
@@ -121,7 +123,8 @@ class GAIL:
 
                 t = 0
                 done = False
-                while not done:
+                env.reset()
+                while not done and steps < num_steps_per_iter:
                     behaviour_names = list(env.behavior_specs.keys())
                     behaviour_specs = list(env.behavior_specs.values())
                     for name in behaviour_names:
@@ -160,10 +163,10 @@ class GAIL:
 
                 if len(ep_obs) < 20:
                     continue
-                for i in range(len(ep_obs)):
-                    obs.append(ep_obs[i])
-                    images.append(ep_images[i])
-                    acts.append(ep_acts[i])
+                for j in range(len(ep_obs)):
+                    obs.append(ep_obs[j])
+                    images.append(ep_images[j])
+                    acts.append(ep_acts[j])
                 ep_obs = FloatTensor(ep_obs)
                 ep_images = FloatTensor(ep_images)
                 ep_acts = FloatTensor(np.array(ep_acts))
@@ -175,7 +178,7 @@ class GAIL:
                 ep_disc_costs = ep_gms * ep_costs
 
                 ep_disc_rets = FloatTensor(
-                    [sum(ep_disc_costs[i:]) for i in range(t)]
+                    [sum(ep_disc_costs[k:]) for k in range(t)]
                 )
                 ep_rets = ep_disc_rets / ep_gms
 
@@ -264,10 +267,7 @@ class GAIL:
             def L():
                 distb = self.pi(images, obs)
 
-                return (advs * torch.exp(
-                    distb.log_prob(acts)
-                    - old_distb.log_prob(acts).detach()
-                ).cuda()).mean()
+                return (advs * torch.exp(distb.log_prob(acts) - old_distb.log_prob(acts).detach()).cuda()).mean()
 
             def kld():
                 distb = self.pi(images, obs)
@@ -313,8 +313,8 @@ class GAIL:
                 g, s, Hs, max_kl, L, kld, old_params, self.pi
             )
 
-            disc_causal_entropy = ((-1) * gms * self.pi(images, obs).log_prob(acts))\
-                .mean()
+            disc_causal_entropy = (
+                (-1) * gms * self.pi(images, obs).log_prob(acts)).mean()
             grad_disc_causal_entropy = get_flat_grads(
                 disc_causal_entropy, self.pi
             )
@@ -322,14 +322,44 @@ class GAIL:
 
             set_params(self.pi, new_params)
 
-            if i % 10 == 0:
+            if i+1 % 10 == 0:
                 self.save(self.save_path)
 
         return
 
+    def test(self, env: UnityEnvironment, iteration_number):
+        env.reset()
+        for i in range(iteration_number):
+            done = False
+            while not done:
+                behaviour_names = list(env.behavior_specs.keys())
+                behaviour_specs = list(env.behavior_specs.values())
+                for name in behaviour_names:
+                    str_split = name.split("?")
+                    spec = env.behavior_specs[name]
+                    decision_steps, terminal_steps = env.get_steps(
+                        behavior_name=name)
+                    if str_split[0] == "Player":
+                        if len(decision_steps) == 1:
+                            for agent_id in decision_steps.agent_id:
+                                observation = decision_steps[agent_id].obs
+                                image = observation[0]
+                                obs_scalar = observation[1][0:6]
+                                # What action to take
+                                act = self.act(image, obs_scalar)
+                                # Set the action to the agent
+                                env.set_action_for_agent(
+                                    behavior_name=name, agent_id=agent_id, action=np.array([act]))
+                        if len(terminal_steps) == 1:
+                            done = True
+                            for agent_id in terminal_steps.agent_id:
+                                observation = terminal_steps[agent_id].obs
+                                image = observation[0]
+                                obs_scalar = observation[1][0:6]
+                env.step()
 
-env = load_environment(graphics=True)
-env.reset()
+
+env = load_environment_editor(graphics=True)
 
 demonstrations = np.load('data.npy', allow_pickle=True)
 
@@ -338,7 +368,7 @@ obs_dim = len(Box(np.array([0, 0, 0, 0, 0, 0]), np.array(
     [np.inf, np.inf, 3, np.inf, np.inf, np.inf])).high)
 action_dim = Discrete(6).n
 model = GAIL(image_dim, obs_dim, action_dim, True, {
-    "num_iters": 200,
+    "num_iters": 20000,
     "num_steps_per_iter": 2000,
     "horizon": None,
     "lambda": 1e-3,
@@ -349,4 +379,6 @@ model = GAIL(image_dim, obs_dim, action_dim, True, {
     "cg_damping": 0.1,
     "normalize_advantage": True
 }, './model.ckpt')
-model.train(env, demonstrations)
+model.load('./model.ckpt')
+model.test(env, 200)
+#model.train(env, demonstrations)

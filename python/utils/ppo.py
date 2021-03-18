@@ -29,7 +29,7 @@ class PPO(Algorithm):
     def __init__(self, image_shape, state_shape, action_shape, device, seed, gamma=0.995,
                  rollout_length=2048, mix_buffer=20, lr_actor=3e-4,
                  lr_critic=3e-4,
-                 epoch_ppo=10, clip_eps=0.2, lambd=0.97, coef_ent=0.0,
+                 epoch_ppo=10, clip_eps=0.2, lambd=0.97, coef_ent=0.01,
                  max_grad_norm=10.0):
         super().__init__(image_shape, state_shape, action_shape, device, seed, gamma)
 
@@ -55,10 +55,22 @@ class PPO(Algorithm):
             image_shape=image_shape,
             state_shape=state_shape
         ).to(device)
+        params = list(self.actor.parameters()) + list(self.critic.parameters())
 
-        self.optim_actor = Adam(self.actor.parameters(), lr=lr_actor)
-        self.optim_critic = Adam(self.critic.parameters(), lr=lr_critic)
+        self.optimizer = Adam(params, lr=3e-4)
 
+        self.actor_old = ActorPolicy(
+            image_shape=image_shape,
+            state_shape=state_shape,
+            action_shape=action_shape
+        ).to(device)
+        self.actor_old.load_state_dict(self.actor.state_dict())
+        self.critic_old = StateFunction(
+            image_shape=image_shape,
+            state_shape=state_shape
+        ).to(device)
+        self.critic_old.load_state_dict(self.critic.state_dict())
+        self.MseLoss = nn.MSELoss()
         self.learning_steps_ppo = 0
         self.rollout_length = rollout_length
         self.epoch_ppo = epoch_ppo
@@ -66,6 +78,7 @@ class PPO(Algorithm):
         self.lambd = lambd
         self.coef_ent = coef_ent
         self.max_grad_norm = max_grad_norm
+        self.device = device
 
     def is_update(self, step):
         return step % self.rollout_length == 0
@@ -113,18 +126,53 @@ class PPO(Algorithm):
         self.update_ppo(images, states, actions, rewards, dones,
                         log_pis, next_images, next_states, writer)
 
-    def update_ppo(self, images, states, actions, rewards, dones, log_pis, next_images, next_states, writer):
-        with torch.no_grad():
-            values = self.critic(images, states)
-            next_values = self.critic(next_images, next_states)
+    def evaluate(self, images, states, actions):
+        dist = self.actor.distribution(images, states)
 
-        targets, gaes = calculate_gae(
-            values, rewards, dones, next_values, self.gamma, self.lambd)
+        action_logprobs = dist.log_prob(actions)
+        dist_entropy = dist.entropy()
 
+        state_value = self.critic(images, states)
+
+        return action_logprobs, torch.squeeze(state_value), dist_entropy
+
+    def update_ppo(self, images, states, actions, rewards_r, dones, log_pis, next_images, next_states, writer):
+        rewards = []
+        discounted_reward = 0
+        for reward, is_terminal in zip(reversed(rewards_r), reversed(dones)):
+            if is_terminal:
+                discounted_reward = 0
+            discounted_reward = reward + (self.gamma * discounted_reward)
+            rewards.insert(0, discounted_reward)
+
+        rewards = torch.tensor(rewards, dtype=torch.float32).to(self.device)
+        rewards = (rewards - rewards.mean()) / (rewards.std() + 1e-5)
+
+        # Optimize policy for K epochs:
         for _ in range(self.epoch_ppo):
-            self.learning_steps_ppo += 1
-            self.update_critic(images, states, targets, writer)
-            self.update_actor(images, states, actions, log_pis, gaes, writer)
+            # Evaluating old actions and values :
+            logprobs, state_values, dist_entropy = self.evaluate(
+                images, states, actions)
+
+            # Finding the ratio (pi_theta / pi_theta__old):
+            ratios = torch.exp(logprobs - log_pis.detach())
+
+            # Finding Surrogate Loss:
+            advantages = rewards - state_values.detach()
+            surr1 = ratios * advantages
+            surr2 = torch.clamp(ratios, 1-self.clip_eps,
+                                1+self.clip_eps) * advantages
+            loss = -torch.min(surr1, surr2) + 0.5 * \
+                self.MseLoss(state_values, rewards) - 0.01*dist_entropy
+
+            # take gradient step
+            self.optimizer.zero_grad()
+            loss.mean().backward()
+            self.optimizer.step()
+
+        # Copy new weights into old policy:
+        self.actor_old.load_state_dict(self.actor.state_dict())
+        self.critic_old.load_state_dict(self.critic.state_dict())
 
     def update_critic(self, images, states, targets, writer):
         loss_critic = (self.critic(images, states) - targets).pow_(2).mean()
@@ -140,15 +188,13 @@ class PPO(Algorithm):
 
     def update_actor(self, images, states, actions, log_pis_old, gaes, writer):
         log_pis = self.actor.evaluate_log_pi(images, states, actions)
-        entropy = -log_pis.mean()  # entropy mudar
+        entropy = -log_pis.mean()
 
         ratios = (log_pis - log_pis_old).exp_()
         loss_actor1 = -ratios * gaes
-        loss_actor2 = -torch.clamp(
-            ratios,
-            1.0 - self.clip_eps,
-            1.0 + self.clip_eps
-        ) * gaes
+        #gaes = advantages
+        loss_actor2 = -torch.clamp(ratios, 1.0 -
+                                   self.clip_eps, 1.0 + self.clip_eps) * gaes
         loss_actor = torch.max(loss_actor1, loss_actor2).mean()
 
         self.optim_actor.zero_grad()

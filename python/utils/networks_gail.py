@@ -48,7 +48,7 @@ class PolicyNetwork(nn.Module):
         x1 = self.cnn(image.permute(0, 3, 1, 2))
         x = torch.cat((x1, state), dim=1)
         if self.discrete:
-            probs = torch.nn.functional.softmax(self.net(x))
+            probs = torch.nn.functional.softmax(self.net(x), dim=-1)
             distb = torch.distributions.Categorical(probs)
         else:
             mean = self.net(x)
