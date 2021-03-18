@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
+using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameAI
 {
@@ -11,15 +13,10 @@ namespace GameAI
         private bool is_game_running = false;
         [SerializeField]
         private RedRunner.Characters.Character m_character;
-        private float next_movement;
 
-        public int NextMovement
-        {
-            get
-            {
-                return (int)this.next_movement;
-            }
-        }
+        private int jump = 0;
+        private float horizontal_movement = 0;
+
         public override void Initialize()
         {
             Debug.Log("Init");
@@ -35,15 +32,25 @@ namespace GameAI
             sensor.AddObservation(RedRunner.GameManager.Singleton.bestScore);
             sensor.AddObservation(RedRunner.GameManager.Singleton.currentGameTime);
         }
-
-        public override void OnActionReceived(float[] vectorAction)
+        public override void OnActionReceived(ActionBuffers actions)
         {
-            this.next_movement = vectorAction[0];
+            float movement = actions.ContinuousActions[0];
+            int jump = actions.DiscreteActions[0];
+            if (m_character.PlayerAiTraining)
+            {
+                m_character.Move(movement);
+                if (jump == 1) m_character.Jump();
+            }
         }
 
-        public override void Heuristic(float[] actionsOut)
+        public override void Heuristic(in ActionBuffers actionsOut)
         {
-
+            var da = actionsOut.DiscreteActions;
+            da[0] = this.jump;
+            this.jump = 0;
+            var ca = actionsOut.ContinuousActions;
+            ca[0] = this.horizontal_movement;
+            this.horizontal_movement = 0;
         }
 
         public void endGame()
@@ -56,13 +63,31 @@ namespace GameAI
             Debug.Log("Episode Begin");
             RedRunner.GameManager.Singleton.EndGame(false);
             RedRunner.GameManager.Singleton.Reset();
-            RedRunner.GameManager.Singleton.StartGame();
+            if (m_character.PlayerAiTraining)
+                RedRunner.GameManager.Singleton.StartGame();
         }
         private void Update()
         {
             is_game_running = RedRunner.GameManager.Singleton.gameRunning;
             if (is_game_running)
             {
+                if (!m_character.PlayerAiTraining)
+                {
+                    float input_horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
+                    if (Mathf.Abs(input_horizontal) > Mathf.Abs(this.horizontal_movement))
+                        this.horizontal_movement = input_horizontal;
+                    m_character.Move(input_horizontal);
+                    if (CrossPlatformInputManager.GetButtonDown("Jump"))
+                    {
+                        this.jump = 1;
+                        m_character.Jump();
+                    }
+                    else
+                    {
+                        if (this.jump != 1)
+                            this.jump = 0;
+                    }
+                }
                 RequestDecision();
             }
         }
