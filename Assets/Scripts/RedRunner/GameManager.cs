@@ -371,6 +371,7 @@ namespace RedRunner
             {
                 section = TerrainGenerator.Singleton.GetCharacterBlock();
             }
+            if (section == null) return;
             object[] outputarray = new object[] { SystemInfo.deviceUniqueIdentifier, game_id, section.name, m_Coin.Value, coins_section, coins_easy_section, coins_hard_section, chest_normal_section, chest_hard_section, total_time_section, total_time_gained_section, lives_lost_section, lives_lost_enemy_water_section, lives_lost_enemy_static_section, lives_lost_enemy_moving_section, m_HighScore, m_Score, player_backtracked_section, jumps_section, average_velocity_section };
             StringBuilder sbOutput = new StringBuilder();
             sbOutput.Append(string.Join(";", outputarray));
