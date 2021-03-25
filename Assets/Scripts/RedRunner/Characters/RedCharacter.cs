@@ -355,7 +355,7 @@ namespace RedRunner.Characters
                     }
                 }
             }
-
+            /*
             if (Input.GetButtonDown("Roll"))
             {
                 Vector2 force = new Vector2(0f, 0f);
@@ -368,7 +368,7 @@ namespace RedRunner.Characters
                     force.x = -m_RollForce;
                 }
                 m_Rigidbody2D.AddForce(force);
-            }
+            }*/
             m_FakePlayer.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z - 0.1f);
         }
 

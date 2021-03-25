@@ -25,12 +25,15 @@ namespace GameAI
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation(RedRunner.GameManager.Singleton.m_Coin.Value);
+            // sensor.AddObservation(RedRunner.GameManager.Singleton.m_Coin.Value); information from the past
             sensor.AddObservation(RedRunner.GameManager.Singleton.coinsGame);
             sensor.AddObservation(m_character.Lives);
             sensor.AddObservation(RedRunner.GameManager.Singleton.currentScore);
-            sensor.AddObservation(RedRunner.GameManager.Singleton.bestScore);
+            // sensor.AddObservation(RedRunner.GameManager.Singleton.bestScore); information from the past
             sensor.AddObservation(RedRunner.GameManager.Singleton.currentGameTime);
+            sensor.AddObservation(RedRunner.GameManager.Singleton.CurrentSectionIdentifier);
+            sensor.AddObservation(RedRunner.GameManager.Singleton.CurrentSectionPosition);
+            sensor.AddObservation(m_character.Rigidbody2D.velocity.x);
         }
         public override void OnActionReceived(ActionBuffers actions)
         {
@@ -110,6 +113,7 @@ namespace GameAI
         private void Update()
         {
             is_game_running = RedRunner.GameManager.Singleton.gameRunning;
+            this.transform.position = m_character.transform.position;
             if (is_game_running)
             {
                 if (!m_character.PlayerAiTraining)

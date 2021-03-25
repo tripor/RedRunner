@@ -16,6 +16,8 @@ namespace RedRunner.TerrainGeneration
         protected float m_Restart_X = 2f;
         [SerializeField]
         protected float m_Restart_Y = 4f;
+        [SerializeField]
+        protected int identifier = 0;
 
         public virtual float Width
         {
@@ -50,6 +52,14 @@ namespace RedRunner.TerrainGeneration
             get
             {
                 return m_Restart_Y;
+            }
+        }
+
+        public virtual int Identifier
+        {
+            get
+            {
+                return this.identifier;
             }
         }
 

@@ -185,6 +185,21 @@ namespace RedRunner
                 return m_Timer;
             }
         }
+
+        public int CurrentSectionIdentifier
+        {
+            get
+            {
+                return this.current_block.Identifier;
+            }
+        }
+        public int CurrentSectionPosition
+        {
+            get
+            {
+                return Mathf.RoundToInt(this.m_MainCharacter.transform.position.x - this.current_block_position);
+            }
+        }
         #endregion
 
         public float Timer
