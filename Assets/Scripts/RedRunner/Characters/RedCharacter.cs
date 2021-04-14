@@ -308,6 +308,10 @@ namespace RedRunner.Characters
             m_Guard = false;
             m_Block = false;
             m_CurrentFootstepSoundIndex = 0;
+            if (GameManager.Singleton.simple_game)
+            {
+                this.m_Lives = 1;
+            }
             GameManager.OnReset += GameManager_OnReset;
         }
 
@@ -381,10 +385,11 @@ namespace RedRunner.Characters
             m_Animator.SetBool("IsDead", IsDead.Value);
             m_Animator.SetBool("Block", m_Block);
             m_Animator.SetBool("Guard", m_Guard);
+            /*
             if (Input.GetButtonDown("Roll"))
             {
                 m_Animator.SetTrigger("Roll");
-            }
+            }*/
         }
 
         //		void OnCollisionEnter2D ( Collision2D collision2D )
@@ -505,7 +510,7 @@ namespace RedRunner.Characters
             m_Lives--;
             if (OnHeartLoss != null)
                 OnHeartLoss();
-            if (m_Lives > 0)
+            if (m_Lives > 0 && !GameManager.Singleton.simple_game)
             {
                 // Get the current block of where the caracter died
                 TerrainGeneration.Block bl = TerrainGeneration.TerrainGenerator.Singleton.GetCharacterBlock();
@@ -546,7 +551,10 @@ namespace RedRunner.Characters
             transform.localScale = m_InitialScale;
             m_Rigidbody2D.velocity = Vector2.zero;
             m_Skeleton.SetActive(false, m_Rigidbody2D.velocity);
-            m_Lives = 3;
+            if (GameManager.Singleton.simple_game)
+                m_Lives = 1;
+            else
+                m_Lives = 3;
             if (OnHeartReset != null)
                 OnHeartReset();
         }

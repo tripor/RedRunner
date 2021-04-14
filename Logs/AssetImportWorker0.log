@@ -15,11 +15,11 @@ C:/Users/figor/Desktop/RedRunner
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-53155
+55393
 Successfully changed project path to: C:/Users/figor/Desktop/RedRunner
 C:/Users/figor/Desktop/RedRunner
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 58.11 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 73.08 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.2.2f1 (068178b99f32)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.2.2f1/Editor/Data/Resources/UnitySubsystems
@@ -30,310 +30,92 @@ Direct3D:
     Renderer: NVIDIA GeForce RTX 2070 (ID=0x1f02)
     Vendor:   
     VRAM:     8031 MB
-    Driver:   27.21.14.6109
+    Driver:   27.21.14.6589
 Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.2.2f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.2.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.2.2f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56380
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56024
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.2f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.001852 seconds.
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.2f1/Editor/Data/PlaybackEngines/LinuxStandaloneSupport/UnityEditor.LinuxStandalone.Extensions.dll
+Registered in 0.001974 seconds.
+Native extension for LinuxStandalone target not found
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 48.42 ms, found 1 plugins.
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 69.71 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Invoked RoslynAnalysisRunner static constructor.
 RoslynAnalysisRunner will not be running.
 RoslynAnalysisRunner has terminated.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.106 seconds
+- Completed reload, in  1.448 seconds
 Platform modules already initialized, skipping
 Registering precompiled user dll's ...
-Registered in 0.004783 seconds.
+Registered in 0.006665 seconds.
 Begin MonoManager ReloadAssembly
+Native extension for LinuxStandalone target not found
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 49.33 ms, found 1 plugins.
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 62.24 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Invoked RoslynAnalysisRunner static constructor.
 RoslynAnalysisRunner will not be running.
 RoslynAnalysisRunner has terminated.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.601 seconds
+- Completed reload, in  1.939 seconds
 Platform modules already initialized, skipping
 ========================================================================
 Worker process is ready to serve import requests
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.05 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.08 seconds
+Refreshing native plugins compatible for Editor in 1.91 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2134 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 100.6 MB.
+System memory in use after: 100.7 MB.
+
+Unloading 46 unused Assets to reduce memory usage. Loaded Objects now: 2553.
+Total: 3.979100 ms (FindLiveObjects: 0.354200 ms CreateObjectMapping: 0.113500 ms MarkObjects: 3.454900 ms  DeleteObjects: 0.054100 ms)
+
+========================================================================
+Received Import Request.
+  path: Assets/Scripts/PersonalityScriptableObject.cs
+  artifactKey: Guid(8cf8f3f25fccbb0448c7c2d62a46acbd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/PersonalityScriptableObject.cs using Guid(8cf8f3f25fccbb0448c7c2d62a46acbd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5799dcc10b10b838fc7db7ba946383fd') in 0.081212 seconds
+  Import took 0.093845 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 30.970478 seconds.
+  path: Assets/Scripts/PersonalityScriptableObject.cs
+  artifactKey: Guid(8cf8f3f25fccbb0448c7c2d62a46acbd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/PersonalityScriptableObject.cs using Guid(8cf8f3f25fccbb0448c7c2d62a46acbd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a559c585b0dbd44e303a7f7240e37749') in 0.013459 seconds
+  Import took 0.035769 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.008042 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for LinuxStandalone target not found
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
 Refreshing native plugins compatible for Editor in 0.66 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2133 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 100.5 MB.
-System memory in use after: 100.6 MB.
-
-Unloading 46 unused Assets to reduce memory usage. Loaded Objects now: 2552.
-Total: 2.666500 ms (FindLiveObjects: 0.354100 ms CreateObjectMapping: 0.110700 ms MarkObjects: 2.165400 ms  DeleteObjects: 0.034600 ms)
-
-========================================================================
-Received Import Request.
-  path: Assets/Demonstrations/RedRunnerRecordi.demo
-  artifactKey: Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Demonstrations/RedRunnerRecordi.demo using Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4349a75161d627ede0c45f2777c34391') in 0.041318 seconds
-  Import took 0.045837 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 6.163936 seconds.
-  path: Assets/Scripts/RedRunner/AI/PlayerWatcher.cs
-  artifactKey: Guid(7597c8c1a37c4cd44b604daf80ac8123) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Scripts/RedRunner/AI/PlayerWatcher.cs using Guid(7597c8c1a37c4cd44b604daf80ac8123) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '324ac5f7e49b71a073435e2395081264') in 0.021495 seconds
-  Import took 0.026526 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.001571 seconds.
-  path: Assets/Scripts/RedRunner/AI/PlayerWatcher.cs
-  artifactKey: Guid(7597c8c1a37c4cd44b604daf80ac8123) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Scripts/RedRunner/AI/PlayerWatcher.cs using Guid(7597c8c1a37c4cd44b604daf80ac8123) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '324ac5f7e49b71a073435e2395081264') in 0.003107 seconds
-  Import took 0.008001 seconds .
-
-========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.004438 seconds.
-Begin MonoManager ReloadAssembly
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.70 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
 Invoked RoslynAnalysisRunner static constructor.
 RoslynAnalysisRunner will not be running.
 RoslynAnalysisRunner has terminated.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.254 seconds
+- Completed reload, in  1.260 seconds
 Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.62 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 0.66 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2095 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 98.3 MB.
-System memory in use after: 98.4 MB.
-
-Unloading 38 unused Assets to reduce memory usage. Loaded Objects now: 2554.
-Total: 2.467500 ms (FindLiveObjects: 0.236500 ms CreateObjectMapping: 0.162900 ms MarkObjects: 2.040500 ms  DeleteObjects: 0.026200 ms)
-
-========================================================================
-Received Import Request.
-  Time since last request: 146.864413 seconds.
-  path: Assets/Scripts/RedRunner/AI/PlayerWatcher.cs
-  artifactKey: Guid(7597c8c1a37c4cd44b604daf80ac8123) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Scripts/RedRunner/AI/PlayerWatcher.cs using Guid(7597c8c1a37c4cd44b604daf80ac8123) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c035590c62c58ef3c82a1bb9ed658c93') in 0.006126 seconds
-  Import took 0.010628 seconds .
-
-========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.004256 seconds.
-Begin MonoManager ReloadAssembly
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.68 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.162 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.70 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2095 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2096 Unused Serialized files (Serialized files now loaded: 0)
 System memory in use before: 98.4 MB.
 System memory in use after: 98.5 MB.
 
-Unloading 38 unused Assets to reduce memory usage. Loaded Objects now: 2556.
-Total: 3.454400 ms (FindLiveObjects: 0.267900 ms CreateObjectMapping: 0.189300 ms MarkObjects: 2.968800 ms  DeleteObjects: 0.026900 ms)
-
-========================================================================
-Received Import Request.
-  Time since last request: 779.627639 seconds.
-  path: Assets/Demonstrations/RedRunnerRecordi.demo
-  artifactKey: Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Demonstrations/RedRunnerRecordi.demo using Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8b38cdf2e80310fcd961682334b92ace') in 0.019920 seconds
-  Import took 0.023949 seconds .
-
-========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.004959 seconds.
-Begin MonoManager ReloadAssembly
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.67 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.141 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.76 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2095 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 99.3 MB.
-System memory in use after: 99.5 MB.
-
-Unloading 38 unused Assets to reduce memory usage. Loaded Objects now: 2558.
-Total: 2.611800 ms (FindLiveObjects: 0.256400 ms CreateObjectMapping: 0.166900 ms MarkObjects: 2.163300 ms  DeleteObjects: 0.024100 ms)
-
-========================================================================
-Received Import Request.
-  Time since last request: 178.297340 seconds.
-  path: Assets/Demonstrations/RedRunnerRecordi.demo
-  artifactKey: Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Demonstrations/RedRunnerRecordi.demo using Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ece5a22726b8d4a2edb709d5d266358b') in 0.018465 seconds
-  Import took 0.022630 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 19.907366 seconds.
-  path: Assets/Prefabs/Blocks/Middle_6.prefab
-  artifactKey: Guid(2d64712e7f51a2044b6538986806f5a7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Prefabs/Blocks/Middle_6.prefab using Guid(2d64712e7f51a2044b6538986806f5a7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd18d7a12c8b87e96b886b3125f10ddce') in 0.157285 seconds
-  Import took 0.164155 seconds .
-
-========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.004231 seconds.
-Begin MonoManager ReloadAssembly
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.63 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.170 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.68 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2095 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 102.7 MB.
-System memory in use after: 102.8 MB.
-
-Unloading 39 unused Assets to reduce memory usage. Loaded Objects now: 2567.
-Total: 2.499900 ms (FindLiveObjects: 0.238200 ms CreateObjectMapping: 0.087200 ms MarkObjects: 2.149200 ms  DeleteObjects: 0.024200 ms)
-
-========================================================================
-Received Import Request.
-  Time since last request: 120.314276 seconds.
-  path: Assets/Demonstrations/RedRunnerRecording10Minutes.demo
-  artifactKey: Guid(d45281d00e6b1d8489ad22e5bcabd5e7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Demonstrations/RedRunnerRecording10Minutes.demo using Guid(d45281d00e6b1d8489ad22e5bcabd5e7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'beca4e601a86a74ecd49872d78742eee') in 0.021606 seconds
-  Import took 0.025882 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.000191 seconds.
-  path: Assets/Demonstrations/RedRunnerRecordi.demo
-  artifactKey: Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Demonstrations/RedRunnerRecordi.demo using Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'cbf5d58fe6669dabf90e0340d38e79e5') in 0.003176 seconds
-  Import took 0.008321 seconds .
-
-========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.004735 seconds.
-Begin MonoManager ReloadAssembly
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.66 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.145 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.86 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2095 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 102.6 MB.
-System memory in use after: 102.7 MB.
-
-Unloading 38 unused Assets to reduce memory usage. Loaded Objects now: 2569.
-Total: 2.187400 ms (FindLiveObjects: 0.241600 ms CreateObjectMapping: 0.083900 ms MarkObjects: 1.831200 ms  DeleteObjects: 0.029500 ms)
-
-========================================================================
-Received Import Request.
-  Time since last request: 40.348079 seconds.
-  path: Assets/Demonstrations/RedRunnerRecordi.demo
-  artifactKey: Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Demonstrations/RedRunnerRecordi.demo using Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b6a5702adfced0f30aba5eca677b8d39') in 0.017092 seconds
-  Import took 0.021347 seconds .
-
-========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.006876 seconds.
-Begin MonoManager ReloadAssembly
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.99 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.140 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.69 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2095 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 102.7 MB.
-System memory in use after: 102.8 MB.
-
-Unloading 38 unused Assets to reduce memory usage. Loaded Objects now: 2571.
-Total: 2.870800 ms (FindLiveObjects: 0.337200 ms CreateObjectMapping: 0.225800 ms MarkObjects: 2.278700 ms  DeleteObjects: 0.027600 ms)
-
-========================================================================
-Received Import Request.
-  Time since last request: 4136.890858 seconds.
-  path: Assets/Demonstrations/RedRunnerRecordi.demo
-  artifactKey: Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Demonstrations/RedRunnerRecordi.demo using Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '588f4fda409c3b3153de8a5a95b8831b') in 0.017839 seconds
-  Import took 0.022550 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 28.932304 seconds.
-  path: Assets/Demonstrations/RedRunnerRecording1hour.demo
-  artifactKey: Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Demonstrations/RedRunnerRecording1hour.demo using Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9a781621873013a7929faf6f8b7a748e') in 0.009443 seconds
-  Import took 0.013897 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.010352 seconds.
-  path: Assets/Demonstrations/RedRunnerRecording1hour.demo
-  artifactKey: Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Demonstrations/RedRunnerRecording1hour.demo using Guid(e56d50e7893538141828f3a12851eacc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9a781621873013a7929faf6f8b7a748e') in 0.003366 seconds
-  Import took 0.007941 seconds .
-
-========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.004573 seconds.
-Begin MonoManager ReloadAssembly
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.65 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.284 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.88 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2095 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 102.5 MB.
-System memory in use after: 102.7 MB.
-
-Unloading 38 unused Assets to reduce memory usage. Loaded Objects now: 2573.
-Total: 2.655900 ms (FindLiveObjects: 0.308400 ms CreateObjectMapping: 0.204900 ms MarkObjects: 2.116500 ms  DeleteObjects: 0.025200 ms)
+Unloading 38 unused Assets to reduce memory usage. Loaded Objects now: 2555.
+Total: 2.288200 ms (FindLiveObjects: 0.191300 ms CreateObjectMapping: 0.076600 ms MarkObjects: 1.988700 ms  DeleteObjects: 0.030600 ms)
 

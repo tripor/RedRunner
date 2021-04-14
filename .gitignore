@@ -35,3 +35,9 @@ sysinfo.txt
 
 
 *.csv
+
+
+/ml-agents-python/
+/python/
+/Assets/PlayerAiModels/
+/Assets/Demonstrations/

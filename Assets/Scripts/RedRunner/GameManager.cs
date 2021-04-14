@@ -123,7 +123,10 @@ namespace RedRunner
         public Property<int> m_Coin = new Property<int>(0);
 
         public float max_game_time = 300f;
+        public bool simple_game = false;
+        public bool curriculum = false;
         public float coin_add_game_time = 1f;
+        public int default_block = 3;
 
 
         #region Getters
@@ -190,7 +193,9 @@ namespace RedRunner
         {
             get
             {
-                return this.current_block.Identifier;
+                if (this.current_block)
+                    return this.current_block.Identifier;
+                else return 0;
             }
         }
         public int CurrentSectionPosition
@@ -214,7 +219,7 @@ namespace RedRunner
                 if (m_Timer <= 0)
                 {
                     m_Timer = 0;
-                    StartCoroutine(DeathCrt(0.1f));
+                    StartCoroutine(DeathCrt(0f));
                 }
                 if (OnTimerChanged != null)
                 {
@@ -296,7 +301,7 @@ namespace RedRunner
         {
             if (isDead)
             {
-                StartCoroutine(DeathCrt(1.5f));
+                StartCoroutine(DeathCrt(0f));
             }
             else
             {
@@ -305,6 +310,7 @@ namespace RedRunner
         }
         public void CoinCollection(bool hard)
         {
+            m_PlayerAi.incrementReward(0.1f);
             if (m_GameRunning)
             {
                 coins_game++;
@@ -335,6 +341,7 @@ namespace RedRunner
 
         public void ChestCollection(bool hard)
         {
+            m_PlayerAi.incrementReward(0.1f);
             if (m_GameRunning)
             {
                 if (hard)
@@ -352,6 +359,7 @@ namespace RedRunner
 
         public void LiveLost(int reason)
         {
+            m_PlayerAi.incrementReward(-1f);
             live_lost = true;
             lives_lost_game++;
             lives_lost_section++;
@@ -433,6 +441,10 @@ namespace RedRunner
                 Application.runInBackground = true;
             m_MainCharacter.IsDead.AddEventAndFire(UpdateDeathEvent, this);
             m_StartScoreX = m_MainCharacter.transform.position.x;
+            if (simple_game)
+            {
+                this.max_game_time = 75f;
+            }
             Init();
         }
 
@@ -457,6 +469,7 @@ namespace RedRunner
                 }
                 if (m_MainCharacter.transform.position.x > m_StartScoreX && m_MainCharacter.transform.position.x > m_Score)
                 {
+                    m_PlayerAi.incrementReward((m_MainCharacter.transform.position.x - m_Score) / 250f);
                     m_Score = m_MainCharacter.transform.position.x;
                     if (OnScoreChanged != null)
                     {
@@ -486,6 +499,7 @@ namespace RedRunner
                 var now_current_block_position = TerrainGenerator.Singleton.GetCharacterBlockPositionX();
                 if (now_current_block_position != current_block_position && now_current_block_position > current_block_position)
                 {
+                    m_PlayerAi.incrementReward(0.3f);
                     if (player_backtracked_section) this.player_backtracked_game++;
                     this.WriteCsvSection(this.current_block);
 
@@ -512,7 +526,7 @@ namespace RedRunner
                 if (m_Timer <= 0)
                 {
                     m_Timer = 0;
-                    StartCoroutine(DeathCrt(0.1f));
+                    StartCoroutine(DeathCrt(0f));
                 }
                 if (OnTimerChanged != null)
                 {

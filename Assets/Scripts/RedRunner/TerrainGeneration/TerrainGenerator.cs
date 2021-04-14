@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using RedRunner.Characters;
+using Unity.MLAgents;
 
 namespace RedRunner.TerrainGeneration
 {
@@ -141,7 +142,7 @@ namespace RedRunner.TerrainGeneration
                 else if (m_GeneratedMiddleBlocksCount < m_Settings.MiddleBlocksCount || m_Settings.MiddleBlocksCount <= 0)
                 {
                     isMiddle = true;
-                    block = ChooseFrom(m_Settings.MiddleBlocks);
+                    block = ChooseMiddle(m_Settings.MiddleBlocks);
                 }
                 else if (m_GeneratedEndBlocksCount < m_Settings.EndBlocksCount || m_Settings.EndBlocksCount <= 0)
                 {
@@ -350,6 +351,36 @@ namespace RedRunner.TerrainGeneration
             if (blocks.Length <= 0)
             {
                 return null;
+            }
+            float total = 0;
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                total += blocks[i].Probability;
+            }
+            float randomPoint = Random.value * total;
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                if (randomPoint < blocks[i].Probability)
+                {
+                    return blocks[i];
+                }
+                else
+                {
+                    randomPoint -= blocks[i].Probability;
+                }
+            }
+            return blocks[blocks.Length - 1];
+        }
+        public static Block ChooseMiddle(Block[] blocks)
+        {
+            if (blocks.Length <= 0)
+            {
+                return null;
+            }
+            if (GameManager.Singleton.simple_game && GameManager.Singleton.curriculum)
+            {
+                int difficulty = Mathf.RoundToInt(Academy.Instance.EnvironmentParameters.GetWithDefault("difficulty", GameManager.Singleton.default_block));
+                return blocks[difficulty];
             }
             float total = 0;
             for (int i = 0; i < blocks.Length; i++)

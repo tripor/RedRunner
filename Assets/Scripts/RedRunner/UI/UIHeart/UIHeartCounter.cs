@@ -13,7 +13,16 @@ namespace RedRunner.UI
         {
             RedRunner.Characters.RedCharacter.OnHeartLoss += RedCharacter_OnHeartLoss;
             RedRunner.Characters.RedCharacter.OnHeartReset += RedCharacter_OnHeartReset;
-            lives = 3;
+            if (GameManager.Singleton.simple_game)
+            {
+                lives = 1;
+                heart2.EmptyHeart();
+                heart3.EmptyHeart();
+            }
+            else
+            {
+                lives = 3;
+            }
         }
 
         void RedCharacter_OnHeartLoss()
@@ -37,10 +46,18 @@ namespace RedRunner.UI
 
         void RedCharacter_OnHeartReset()
         {
-            lives = 3;
-            heart3.ResetHeart();
-            heart2.ResetHeart();
-            heart1.ResetHeart();
+            if (GameManager.Singleton.simple_game)
+            {
+                lives = 2;
+                heart1.ResetHeart();
+            }
+            else
+            {
+                lives = 3;
+                heart3.ResetHeart();
+                heart2.ResetHeart();
+                heart1.ResetHeart();
+            }
         }
     }
 }
