@@ -51,16 +51,13 @@ namespace GameAI
                     m_character.Move(1);
                     break;
                 case 3:
-                    Debug.Log("Jump");
                     m_character.Jump();
                     break;
                 case 4:
-                    Debug.Log("Jump");
                     m_character.Move(-1);
                     m_character.Jump();
                     break;
                 case 5:
-                    Debug.Log("Jump");
                     m_character.Move(1);
                     m_character.Jump();
                     break;

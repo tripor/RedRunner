@@ -499,6 +499,7 @@ namespace RedRunner
                 var now_current_block_position = TerrainGenerator.Singleton.GetCharacterBlockPositionX();
                 if (now_current_block_position != current_block_position && now_current_block_position > current_block_position)
                 {
+                    Debug.Log(m_Score);
                     m_PlayerAi.incrementReward(0.3f);
                     if (player_backtracked_section) this.player_backtracked_game++;
                     this.WriteCsvSection(this.current_block);
