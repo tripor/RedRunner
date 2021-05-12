@@ -103,6 +103,7 @@ public class PersonalityScriptableObject : ScriptableObject
     public float newScoreImportance = 3;
     [Space]
 
+    public float lossEachSection = 1;
     [Tooltip("Prefered concentration")]
     public float concentrationLevelPrefered = 0;
     public float concentrationImportance = 1;

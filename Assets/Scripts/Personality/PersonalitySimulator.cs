@@ -11,8 +11,11 @@ public class PersonalitySimulator : MonoBehaviour
     public int currentPersonality = 0;
     private List<int> sectionPassed = new List<int>();
     private float currentConcentration = 0;
+    private Queue<float> concentrationQueue;
     private float currentSkill = 0;
+    private Queue<float> skillQueue;
     private float currentChallenge = 0;
+    private Queue<float> challengeQueue;
     private float currentImmersion = 0;
     private bool endGame = false;
     private bool firstSection = true;
@@ -184,23 +187,44 @@ public class PersonalitySimulator : MonoBehaviour
         int randomBacktrackSections = Random.Range(1, 101);
         if (randomBacktrackSections <= personalities[currentPersonality].backtrackProbability[section]) backtracksGame++;
 
+        float average;
+
         // Concentration
+        if (concentrationQueue.Count >= personalities[currentPersonality].toleranceForRepetingLevels)
+        {
+            currentConcentration -= concentrationQueue.Dequeue();
+        }
+        concentrationQueue.Enqueue(personalities[currentPersonality].concentration[section]);
         currentConcentration += personalities[currentPersonality].concentration[section];
-        sectionReward += (1 / (Mathf.Abs(personalities[currentPersonality].concentrationLevelPrefered - currentConcentration) + 1)) * personalities[currentPersonality].concentrationImportance;
+        average = currentConcentration / concentrationQueue.Count;
+        sectionReward += (1 / (Mathf.Abs(personalities[currentPersonality].concentrationLevelPrefered - average) + 1)) * personalities[currentPersonality].concentrationImportance;
 
         // Skill
+        if (skillQueue.Count >= personalities[currentPersonality].toleranceForRepetingLevels)
+        {
+            currentSkill -= skillQueue.Dequeue();
+        }
+        skillQueue.Enqueue(personalities[currentPersonality].skill[section]);
         currentSkill += personalities[currentPersonality].skill[section];
-        sectionReward += (1 / (Mathf.Abs(personalities[currentPersonality].skillLevelPrefered - currentSkill) + 1)) * personalities[currentPersonality].skillImportance;
+        average = currentSkill / skillQueue.Count;
+        sectionReward += (1 / (Mathf.Abs(personalities[currentPersonality].skillLevelPrefered - average) + 1)) * personalities[currentPersonality].skillImportance;
 
         // Challenge
+        if (challengeQueue.Count >= personalities[currentPersonality].toleranceForRepetingLevels)
+        {
+            currentChallenge -= challengeQueue.Dequeue();
+        }
+        challengeQueue.Enqueue(personalities[currentPersonality].challenge[section]);
         currentChallenge += personalities[currentPersonality].challenge[section];
-        sectionReward += (1 / (Mathf.Abs(personalities[currentPersonality].challengeLevelPrefered - currentChallenge) + 1)) * personalities[currentPersonality].challengeImportance;
+        average = currentChallenge / challengeQueue.Count;
+        sectionReward += (1 / (Mathf.Abs(personalities[currentPersonality].challengeLevelPrefered - average) + 1)) * personalities[currentPersonality].challengeImportance;
 
         // Immersion
-
+        /*
         currentImmersion += personalities[currentPersonality].immersion[section];
         sectionReward += (1 / (Mathf.Abs(personalities[currentPersonality].immersionLevelPrefered - currentImmersion) + 1)) * personalities[currentPersonality].immersionImportance;
-
+        currentImmersion -= personalities[currentPersonality].lossEachSection;
+        */
         return sectionReward;
     }
 
@@ -216,6 +240,9 @@ public class PersonalitySimulator : MonoBehaviour
         coinsPersonalities = new List<int>();
         chestsPersonalities = new List<int>();
         sectionPassed = new List<int>();
+        concentrationQueue = new Queue<float>();
+        skillQueue = new Queue<float>();
+        challengeQueue = new Queue<float>();
         for (int i = 0; i < this.personalities.Count; i++)
         {
             this.maxScorePersonalities.Add(0);
@@ -242,8 +269,11 @@ public class PersonalitySimulator : MonoBehaviour
         currentLives = 3;
         currentScore = 0;
         currentConcentration = 0;
+        concentrationQueue = new Queue<float>();
         currentSkill = 0;
+        skillQueue = new Queue<float>();
         currentChallenge = 0;
+        challengeQueue = new Queue<float>();
         currentImmersion = 0;
         endGame = false;
         firstSection = true;
