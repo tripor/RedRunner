@@ -25,6 +25,8 @@ namespace RedRunner.TerrainGeneration
         protected Block[] m_EndBlocks;
         [SerializeField]
         protected BackgroundLayer[] m_BackgroundLayers;
+        [SerializeField]
+        protected Block specialThinkingBlock;
 
         public float LevelLength
         {
@@ -79,6 +81,13 @@ namespace RedRunner.TerrainGeneration
             get
             {
                 return m_EndBlocks;
+            }
+        }
+        public Block SpecialThinkingBlock
+        {
+            get
+            {
+                return specialThinkingBlock;
             }
         }
 

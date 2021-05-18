@@ -19,7 +19,6 @@ namespace GameAI
 
         public override void Initialize()
         {
-            Debug.Log("Init");
             is_game_running = false;
             time = 0;
         }
@@ -112,7 +111,6 @@ namespace GameAI
 
         public override void OnEpisodeBegin()
         {
-            Debug.Log("Episode Begin");
             RedRunner.GameManager.Singleton.EndGame(false);
             RedRunner.GameManager.Singleton.Reset();
             if (m_character.PlayerAiTraining)

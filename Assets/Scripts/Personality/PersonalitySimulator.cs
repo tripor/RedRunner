@@ -26,6 +26,8 @@ public class PersonalitySimulator : MonoBehaviour
 
     public AdaptivityAI ai;
 
+    private float maxWidth = 0;
+
     #region Observations
     [System.NonSerialized] public List<float> maxScorePersonalities;
     [System.NonSerialized] public float currentScore = 0;
@@ -46,9 +48,11 @@ public class PersonalitySimulator : MonoBehaviour
     [System.NonSerialized] public int chestGame = 0;
 
     [System.NonSerialized] public float averageVelocityGames = 0;
-    private int averageVelocityGames_i = 0;
+    [System.NonSerialized] public float m2VelocityGames = 0;
+    [System.NonSerialized] public int averageVelocityGames_i = 0;
     [System.NonSerialized] public List<float> averageVelocityPersonalities;
-    private List<int> averageVelocityPersonalities_i;
+    [System.NonSerialized] public List<float> m2VelocityPersonalities;
+    [System.NonSerialized] public List<int> averageVelocityPersonalities_i;
 
     [System.NonSerialized] public int jumpsGame = 0;
 
@@ -83,9 +87,9 @@ public class PersonalitySimulator : MonoBehaviour
             }
         }
         sectionPassed.Add(section);
-        if (!repetingSection)
+        if (repetingSection)
         {
-            sectionReward += personalities[currentPersonality].newLevelsImportance;
+            sectionReward -= personalities[currentPersonality].newLevelsImportance;
         }
 
         // Coins collected in section
@@ -148,7 +152,7 @@ public class PersonalitySimulator : MonoBehaviour
         // Time
         float randomTimeSections = Random.Range((float)personalities[currentPersonality].timeSection[section].minimum, (float)personalities[currentPersonality].timeSection[section].maximum);
         timeSpent += 1 + randomTimeSections + randomTimeSections * trueLost * 0.6f;
-        if (timeSpent > 500 && !endGame)
+        if (timeSpent > 300 && !endGame)
         {
             float randomPlaceInSection = Random.Range(0, width);
 
@@ -167,14 +171,25 @@ public class PersonalitySimulator : MonoBehaviour
         // Average velocity in section
         float randomVelocitySections = Random.Range((float)personalities[currentPersonality].speedSection[section].minimum, (float)personalities[currentPersonality].speedSection[section].maximum);
 
-        averageVelocityGames += (randomVelocitySections - averageVelocityGames) / ++averageVelocityGames_i;
-        averageVelocityPersonalities[currentPersonality] += (randomVelocitySections - averageVelocityPersonalities[currentPersonality]) / ++averageVelocityPersonalities_i[currentPersonality];
+        averageVelocityGames_i++;
+        averageVelocityPersonalities_i[currentPersonality]++;
+        var delta = randomVelocitySections - averageVelocityGames;
+        averageVelocityGames += delta / averageVelocityGames_i;
+        var deltaP = randomVelocitySections - averageVelocityPersonalities[currentPersonality];
+        averageVelocityPersonalities[currentPersonality] += deltaP / averageVelocityPersonalities_i[currentPersonality];
+        var delta2 = randomVelocitySections - averageVelocityGames;
+        m2VelocityGames += delta * delta2;
+        var delta2P = randomVelocitySections - averageVelocityPersonalities[currentPersonality];
+        m2VelocityPersonalities[currentPersonality] += deltaP * delta2P;
 
-        float percentageVelocity = randomVelocitySections / personalities[currentPersonality].speedPreference;
-        if (!float.IsNaN(percentageVelocity))
+        float percentageVelocity = averageVelocityGames / personalities[currentPersonality].speedPreference;
+        float percentageVelocityPer = averageVelocityPersonalities[currentPersonality] / personalities[currentPersonality].speedPreference;
+        if (!float.IsNaN(percentageVelocity) && !float.IsNaN(percentageVelocityPer))
         {
-            if (percentageVelocity < 1) sectionReward -= (1 - percentageVelocity) * personalities[currentPersonality].speedImportance;
-            else sectionReward += percentageVelocity * personalities[currentPersonality].speedImportance;
+            if (percentageVelocity < 1) sectionReward -= ((1 - percentageVelocity) * personalities[currentPersonality].speedImportance) / 2;
+            else sectionReward += (percentageVelocity * personalities[currentPersonality].speedImportance) / 2;
+            if (percentageVelocityPer < 1) sectionReward -= ((1 - percentageVelocityPer) * personalities[currentPersonality].speedImportance) / 2;
+            else sectionReward += (percentageVelocityPer * personalities[currentPersonality].speedImportance) / 2;
         }
 
         currentScore += width;
@@ -225,17 +240,23 @@ public class PersonalitySimulator : MonoBehaviour
         sectionReward += (1 / (Mathf.Abs(personalities[currentPersonality].immersionLevelPrefered - currentImmersion) + 1)) * personalities[currentPersonality].immersionImportance;
         currentImmersion -= personalities[currentPersonality].lossEachSection;
         */
+        sectionReward = (width / maxWidth) * sectionReward;
         return sectionReward;
     }
 
     private void Start()
     {
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            if (blocks[i].Width > maxWidth) maxWidth = blocks[i].Width;
+        }
         this.maxScorePersonalities = new List<float>();
         lifeLostWaterPersonalities = new List<int>();
         lifeLostMovingPersonalities = new List<int>();
         lifeLostStaticPersonalities = new List<int>();
         lifeLostPersonalities = new List<int>();
         averageVelocityPersonalities = new List<float>();
+        m2VelocityPersonalities = new List<float>();
         averageVelocityPersonalities_i = new List<int>();
         coinsPersonalities = new List<int>();
         chestsPersonalities = new List<int>();
@@ -251,6 +272,7 @@ public class PersonalitySimulator : MonoBehaviour
             lifeLostStaticPersonalities.Add(0);
             lifeLostPersonalities.Add(0);
             averageVelocityPersonalities.Add(0);
+            m2VelocityPersonalities.Add(0);
             averageVelocityPersonalities_i.Add(0);
             coinsPersonalities.Add(0);
             chestsPersonalities.Add(0);
@@ -261,6 +283,7 @@ public class PersonalitySimulator : MonoBehaviour
     public void nextSection(int section)
     {
         currentSection = section;
+        Debug.Log(currentPersonality + " " + section);
         waitingForNewSection = false;
     }
 
@@ -291,6 +314,7 @@ public class PersonalitySimulator : MonoBehaviour
         timeSpent = 2;
         averageVelocityGames_i = 0;
         averageVelocityGames = 0;
+        m2VelocityGames = 0;
 
         jumpsGame = 0;
         backtracksGame = 0;
@@ -305,6 +329,7 @@ public class PersonalitySimulator : MonoBehaviour
             lifeLostPersonalities[currentPersonality] = 0;
             maxScorePersonalities[currentPersonality] = 0;
             averageVelocityPersonalities[currentPersonality] = 0;
+            m2VelocityPersonalities[currentPersonality] = 0;
             averageVelocityPersonalities_i[currentPersonality] = 0;
             coinsPersonalities[currentPersonality] = 0;
             chestsPersonalities[currentPersonality] = 0;

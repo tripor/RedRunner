@@ -105,6 +105,7 @@ namespace RedRunner.TerrainGeneration
             m_GeneratedMiddleBlocksCount = 0;
             m_GeneratedEndBlocksCount = 0;
             m_Reset = false;
+            Generate();
         }
 
         protected virtual void OnDestroy()
@@ -123,7 +124,51 @@ namespace RedRunner.TerrainGeneration
                 m_RemoveTime = Time.time + 5f;
                 Remove();
             }
-            Generate();
+            //Generate();
+        }
+
+        public void GenerateMiddle(int block_number)
+        {
+            Block block = null;
+            Vector3 current = new Vector3(m_CurrentX, 0f, 0f);
+            if (m_GeneratedMiddleBlocksCount < m_Settings.MiddleBlocksCount || m_Settings.MiddleBlocksCount <= 0)
+            {
+                block = m_Settings.MiddleBlocks[block_number];
+            }
+            if (block != null)
+            {
+                if (m_Settings.MiddleBlocksCount > 0)
+                {
+                    m_GeneratedMiddleBlocksCount++;
+                }
+                CreateBlock(block, current);
+                current = new Vector3(m_CurrentX, 0f, 0f);
+                CreateBlock(m_Settings.SpecialThinkingBlock, current);
+            }
+            for (int i = 0; i < m_BackgroundLayers.Length; i++)
+            {
+                int random = Random.Range(0, 2);
+                bool generate = random == 1 ? true : false;
+                if (!generate)
+                {
+                    continue;
+                }
+                current = new Vector3(m_BackgroundLayers[i].CurrentX, 0f, 0f);
+                BackgroundBlock BGblock = (BackgroundBlock)ChooseFrom(m_BackgroundLayers[i].Blocks);
+                float newX = 0f;
+                if (m_BackgroundLayers[i].LastBlock != null)
+                {
+                    newX = m_BackgroundLayers[i].CurrentX + m_BackgroundLayers[i].LastBlock.Width;
+                }
+                else
+                {
+                    newX = 0f;
+                }
+                if (BGblock != null && (m_BackgroundLayers[i].LastBlock == null || newX < m_Character.transform.position.x + m_BackgroundGenerateRange))
+                {
+                    CreateBackgroundBlock(BGblock, current, m_BackgroundLayers[i], i);
+                }
+            }
         }
 
         public virtual void Generate()

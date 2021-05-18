@@ -27,6 +27,44 @@ public class AdaptivityAI : Agent
         sensor.AddObservation(PersonalitySimulator.Instance.chestGame);
         sensor.AddObservation(PersonalitySimulator.Instance.averageVelocityGames);
         sensor.AddObservation(PersonalitySimulator.Instance.averageVelocityPersonalities[currentPersonality]);
+        if (PersonalitySimulator.Instance.averageVelocityGames_i > 1)
+        {
+            float variance = PersonalitySimulator.Instance.m2VelocityGames / PersonalitySimulator.Instance.averageVelocityGames_i;
+            if (!float.IsNaN(variance))
+            {
+                sensor.AddObservation(variance);
+                sensor.AddObservation(Mathf.Sqrt(variance));
+            }
+            else
+            {
+                sensor.AddObservation(0);
+                sensor.AddObservation(0);
+            }
+        }
+        else
+        {
+            sensor.AddObservation(0);
+            sensor.AddObservation(0);
+        }
+        if (PersonalitySimulator.Instance.averageVelocityPersonalities_i[currentPersonality] > 1)
+        {
+            float variance = PersonalitySimulator.Instance.m2VelocityPersonalities[currentPersonality] / PersonalitySimulator.Instance.averageVelocityPersonalities_i[currentPersonality];
+            if (!float.IsNaN(variance))
+            {
+                sensor.AddObservation(variance);
+                sensor.AddObservation(Mathf.Sqrt(variance));
+            }
+            else
+            {
+                sensor.AddObservation(0);
+                sensor.AddObservation(0);
+            }
+        }
+        else
+        {
+            sensor.AddObservation(0);
+            sensor.AddObservation(0);
+        }
         sensor.AddObservation(PersonalitySimulator.Instance.jumpsGame);
         sensor.AddObservation(PersonalitySimulator.Instance.backtracksGame);
         sensor.AddObservation(PersonalitySimulator.Instance.timeSpent);

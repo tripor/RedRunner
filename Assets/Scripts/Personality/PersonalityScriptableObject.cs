@@ -29,12 +29,18 @@ public class RandomNumberFloat
 [Serializable]
 public class LifeLostType
 {
-    private List<int> choose;
     public LifeLostType(int water, int static_enemy, int moving_enemy)
     {
         this.water = water;
         this.static_enemy = static_enemy;
         this.moving_enemy = moving_enemy;
+    }
+    public int water;
+    public int static_enemy;
+    public int moving_enemy;
+
+    public int typeToLost()
+    {
         List<int> choose = new List<int>();
         for (int i = 0; i < water; i++)
         {
@@ -48,13 +54,6 @@ public class LifeLostType
         {
             choose.Add(3);
         }
-    }
-    public int water;
-    public int static_enemy;
-    public int moving_enemy;
-
-    public int typeToLost()
-    {
         int randomNumber = UnityEngine.Random.Range(0, water + static_enemy + moving_enemy);
         return choose[randomNumber];
     }

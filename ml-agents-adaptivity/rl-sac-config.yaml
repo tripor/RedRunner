@@ -1,16 +1,18 @@
 behaviors:
   Adaptivity:
-    trainer_type: ppo
+    trainer_type: sac
     max_steps: 50000000
     hyperparameters:
-      batch_size: 256
-      buffer_size: 102400
       learning_rate: 0.0003
-      beta: 5.0e-3
-      epsilon: 0.2
-      lambd: 0.95
-      num_epoch: 3
-      learning_rate_schedule: linear
+      learning_rate_schedule: constant
+      batch_size: 256
+      buffer_size: 1000000
+      buffer_init_steps: 0
+      tau: 0.005
+      steps_per_update: 10.0
+      save_replay_buffer: false
+      init_entcoef: 0.05
+      reward_signal_steps_per_update: 10.0
     network_settings:
       normalize: false
       hidden_units: 512
@@ -21,7 +23,7 @@ behaviors:
     reward_signals:
       extrinsic:
         gamma: 0.99
-        strength: 1
+        strength: 1.0
 torch_settings:
   device: cuda
 engine_settings:

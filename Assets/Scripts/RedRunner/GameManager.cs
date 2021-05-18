@@ -57,6 +57,8 @@ namespace RedRunner
         private bool m_GameStarted = false;
         private bool m_GameRunning = false;
         private bool m_AudioEnabled = true;
+        private bool specialThinkingBlock = false;
+        private bool firstSection = true;
 
         [SerializeField]
         private GameAI.PlayerWatcher m_PlayerAi;
@@ -78,6 +80,7 @@ namespace RedRunner
         private int chest_normal_section;
         private int chest_hard_game;
         private int chest_hard_section;
+        private int chest_user;
         // Time
         private float total_time_game;
         private float total_time_section;
@@ -86,12 +89,16 @@ namespace RedRunner
         // Lives
         private int lives_lost_game;
         private int lives_lost_section;
+        private int lives_lost_user;
         private int lives_lost_enemy_static_game;
         private int lives_lost_enemy_static_section;
+        private int lives_lost_enemy_static_user;
         private int lives_lost_enemy_moving_game;
         private int lives_lost_enemy_moving_section;
+        private int lives_lost_enemy_moving_user;
         private int lives_lost_enemy_water_game;
         private int lives_lost_enemy_water_section;
+        private int lives_lost_enemy_water_user;
         // Score
         private float best_score_game;
         private float score_game;
@@ -101,8 +108,12 @@ namespace RedRunner
         private bool player_backtracked_section;
         private int jumps_game;
         private int jumps_section;
+        private float average_velocity_user;
+        private int average_velocity_user_i;
+        private float average_velocity_user_m2;
         private float average_velocity_game;
         private int average_velocity_game_i;
+        private float average_velocity_game_m2;
         private float average_velocity_section;
         private int average_velocity_section_i;
         [SerializeField]
@@ -127,6 +138,7 @@ namespace RedRunner
         public bool curriculum = false;
         public float coin_add_game_time = 1f;
         public int default_block = 3;
+        public AdaptivityAIGame AdaptivityAIGame;
 
 
         #region Getters
@@ -153,11 +165,32 @@ namespace RedRunner
                 return m_AudioEnabled;
             }
         }
-        public int coinsGame
+        public int CoinsGame
         {
             get
             {
                 return coins_game;
+            }
+        }
+        public int ChestGame
+        {
+            get
+            {
+                return chest_hard_game + chest_normal_game;
+            }
+        }
+        public int JumpsGame
+        {
+            get
+            {
+                return this.jumps_game;
+            }
+        }
+        public int BacktracksGame
+        {
+            get
+            {
+                return this.player_backtracked_game;
             }
         }
         public float currentScore
@@ -203,6 +236,162 @@ namespace RedRunner
             get
             {
                 return Mathf.RoundToInt(this.m_MainCharacter.transform.position.x - this.current_block_position);
+            }
+        }
+
+        public int CurrentLives
+        {
+            get
+            {
+                return this.m_MainCharacter.Lives;
+            }
+        }
+        public int LivesLostUser
+        {
+            get
+            {
+                return this.lives_lost_user;
+            }
+        }
+        public int LivesLostStaticUser
+        {
+            get
+            {
+                return this.lives_lost_enemy_static_user;
+            }
+        }
+        public int LivesLostMovingUser
+        {
+            get
+            {
+                return this.lives_lost_enemy_moving_user;
+            }
+        }
+        public int LivesLostWaterUser
+        {
+            get
+            {
+                return this.lives_lost_enemy_water_user;
+            }
+        }
+        public int CoinsUser
+        {
+            get
+            {
+                return this.m_Coin.Value;
+            }
+        }
+        public int ChestUser
+        {
+            get
+            {
+                return this.chest_user;
+            }
+        }
+        public int LivesLostGame
+        {
+            get
+            {
+                return this.lives_lost_game;
+            }
+        }
+        public int LivesLostStaticGame
+        {
+            get
+            {
+                return this.lives_lost_enemy_static_game;
+            }
+        }
+        public int LivesLostMovingGame
+        {
+            get
+            {
+                return this.lives_lost_enemy_moving_game;
+            }
+        }
+        public int LivesLostWaterGame
+        {
+            get
+            {
+                return this.lives_lost_enemy_water_game;
+            }
+        }
+        public float AverageVelocityGame
+        {
+            get
+            {
+                return this.average_velocity_game;
+            }
+        }
+        public float AverageVelocityUser
+        {
+            get
+            {
+                return this.average_velocity_user;
+            }
+        }
+        public float VarianceVelocityGame
+        {
+            get
+            {
+                if (this.average_velocity_game_i > 1)
+                {
+                    float variance = this.average_velocity_game_m2 / this.average_velocity_game_i;
+                    if (!float.IsNaN(variance))
+                    {
+                        return variance;
+                    }
+                    else return 0;
+                }
+                else return 0;
+            }
+        }
+        public float VarianceVelocityUser
+        {
+            get
+            {
+                if (this.average_velocity_user_i > 1)
+                {
+                    float variance = this.average_velocity_user_m2 / this.average_velocity_user_i;
+                    if (!float.IsNaN(variance))
+                    {
+                        return variance;
+                    }
+                    else return 0;
+                }
+                else return 0;
+            }
+        }
+        public float StandardDeviationVelocityGame
+        {
+            get
+            {
+                if (this.average_velocity_game_i > 1)
+                {
+                    float variance = this.average_velocity_game_m2 / this.average_velocity_game_i;
+                    if (!float.IsNaN(variance))
+                    {
+                        return Mathf.Sqrt(variance);
+                    }
+                    else return 0;
+                }
+                else return 0;
+            }
+        }
+        public float StandardDeviationVelocityUser
+        {
+            get
+            {
+                if (this.average_velocity_user_i > 1)
+                {
+                    float variance = this.average_velocity_user_m2 / this.average_velocity_user_i;
+                    if (!float.IsNaN(variance))
+                    {
+                        return Mathf.Sqrt(variance);
+                    }
+                    else return 0;
+                }
+                else return 0;
             }
         }
         #endregion
@@ -251,6 +440,14 @@ namespace RedRunner
             {
                 m_Coin.Value = 0;
             }
+            if (SaveGame.Exists("chest") && !m_MainCharacter.PlayerAiTraining)
+            {
+                this.chest_user = SaveGame.Load<int>("chest");
+            }
+            else
+            {
+                this.chest_user = 0;
+            }
             if (SaveGame.Exists("id"))
             {
                 game_id = SaveGame.Load<int>("id") + 1;
@@ -282,6 +479,62 @@ namespace RedRunner
             else
             {
                 m_HighScore = 0f;
+            }
+            if (SaveGame.Exists("livesLostUser") && !m_MainCharacter.PlayerAiTraining)
+            {
+                this.lives_lost_user = SaveGame.Load<int>("livesLostUser");
+            }
+            else
+            {
+                this.lives_lost_user = 0;
+            }
+            if (SaveGame.Exists("livesLostMovingUser") && !m_MainCharacter.PlayerAiTraining)
+            {
+                this.lives_lost_enemy_moving_user = SaveGame.Load<int>("livesLostMovingUser");
+            }
+            else
+            {
+                this.lives_lost_enemy_moving_user = 0;
+            }
+            if (SaveGame.Exists("livesLostStaticUser") && !m_MainCharacter.PlayerAiTraining)
+            {
+                this.lives_lost_enemy_static_user = SaveGame.Load<int>("livesLostStaticUser");
+            }
+            else
+            {
+                this.lives_lost_enemy_static_user = 0;
+            }
+            if (SaveGame.Exists("livesLostWaterUser") && !m_MainCharacter.PlayerAiTraining)
+            {
+                this.lives_lost_enemy_water_user = SaveGame.Load<int>("livesLostWaterUser");
+            }
+            else
+            {
+                this.lives_lost_enemy_water_user = 0;
+            }
+            if (SaveGame.Exists("averageVelocityUser") && !m_MainCharacter.PlayerAiTraining)
+            {
+                this.average_velocity_user = SaveGame.Load<float>("averageVelocityUser");
+            }
+            else
+            {
+                this.average_velocity_user = 0f;
+            }
+            if (SaveGame.Exists("averageVelocityUserI") && !m_MainCharacter.PlayerAiTraining)
+            {
+                this.average_velocity_user_i = SaveGame.Load<int>("averageVelocityUserI");
+            }
+            else
+            {
+                this.average_velocity_user_i = 0;
+            }
+            if (SaveGame.Exists("averageVelocityUserM2") && !m_MainCharacter.PlayerAiTraining)
+            {
+                this.average_velocity_user_m2 = SaveGame.Load<float>("averageVelocityUserM2");
+            }
+            else
+            {
+                this.average_velocity_user_m2 = 0f;
             }
             if (!File.Exists(csv_section_path))
             {
@@ -344,6 +597,7 @@ namespace RedRunner
             m_PlayerAi.incrementReward(0.1f);
             if (m_GameRunning)
             {
+                this.chest_user++;
                 if (hard)
                 {
                     chest_hard_game++;
@@ -363,21 +617,25 @@ namespace RedRunner
             live_lost = true;
             lives_lost_game++;
             lives_lost_section++;
+            lives_lost_user++;
             // 0-water,1-static,2-moving
             if (reason == 0)
             {
                 lives_lost_enemy_water_game++;
                 lives_lost_enemy_water_section++;
+                lives_lost_enemy_water_user++;
             }
             else if (reason == 1)
             {
                 lives_lost_enemy_static_game++;
                 lives_lost_enemy_static_section++;
+                lives_lost_enemy_static_user++;
             }
             else if (reason == 2)
             {
                 lives_lost_enemy_moving_game++;
                 lives_lost_enemy_moving_section++;
+                lives_lost_enemy_moving_user++;
             }
         }
 
@@ -453,6 +711,10 @@ namespace RedRunner
             EndGame(false);
             if (!m_MainCharacter.PlayerAiTraining)
                 UIManager.Singleton.Init();
+            if (OnReset != null)
+            {
+                OnReset();
+            }
             StartCoroutine(Load());
             m_Timer = max_game_time;
         }
@@ -492,17 +754,41 @@ namespace RedRunner
                         player_backtracked_section = true;
                     }
                 }
-                this.average_velocity_game += ((m_MainCharacter.Rigidbody2D.velocity.x - this.average_velocity_game) / ++this.average_velocity_game_i);
                 this.average_velocity_section += ((m_MainCharacter.Rigidbody2D.velocity.x - this.average_velocity_section) / ++this.average_velocity_section_i);
                 total_time_game += Time.deltaTime;
                 total_time_section += Time.deltaTime;
                 var now_current_block_position = TerrainGenerator.Singleton.GetCharacterBlockPositionX();
                 if (now_current_block_position != current_block_position && now_current_block_position > current_block_position)
                 {
-                    Debug.Log("Time: " + total_time_section + " Velocity: " + average_velocity_section + " Jumps:" + jumps_section);
-                    m_PlayerAi.incrementReward(0.3f);
+                    // A Section has ended
                     if (player_backtracked_section) this.player_backtracked_game++;
-                    this.WriteCsvSection(this.current_block);
+                    if (firstSection)
+                    {
+                        firstSection = false;
+                    }
+                    else if (specialThinkingBlock)
+                    {
+                        specialThinkingBlock = false;
+                    }
+                    else
+                    {
+                        this.AdaptivityAIGame.RequestDecision();
+
+                        this.average_velocity_game_i++;
+                        this.average_velocity_user_i++;
+                        var delta = this.average_velocity_section - this.average_velocity_game;
+                        this.average_velocity_game += delta / this.average_velocity_game_i;
+                        var deltaP = this.average_velocity_section - this.average_velocity_user;
+                        this.average_velocity_user += deltaP / this.average_velocity_user_i;
+                        var delta2 = this.average_velocity_section - this.average_velocity_game;
+                        this.average_velocity_game_m2 += delta * delta2;
+                        var delta2P = this.average_velocity_section - this.average_velocity_user;
+                        this.average_velocity_user_m2 += deltaP * delta2P;
+
+                        Debug.Log("Time: " + total_time_section + " Velocity: " + average_velocity_section + " Jumps:" + jumps_section);
+                        m_PlayerAi.incrementReward(0.3f);
+                        this.WriteCsvSection(this.current_block);
+                    }
 
                     this.coins_section = 0;
                     this.coins_easy_section = 0;
@@ -521,6 +807,7 @@ namespace RedRunner
                     this.average_velocity_section_i = 0;
                     this.current_block_position = now_current_block_position;
                     this.current_block = TerrainGenerator.Singleton.GetCharacterBlock();
+                    if (this.current_block.Identifier == -2) this.specialThinkingBlock = true;
                 }
 
                 m_Timer -= Time.deltaTime;
@@ -568,9 +855,17 @@ namespace RedRunner
             this.csv_game.Close();
             this.csv_section.Close();
             SaveGame.Save<int>("coin", m_Coin.Value);
+            SaveGame.Save<int>("chest", this.chest_user);
             SaveGame.Save<int>("id", game_id);
             SaveGame.Save<float>("lastScore", m_Score);
             SaveGame.Save<float>("highScore", m_HighScore);
+            SaveGame.Save<int>("livesLostUser", this.lives_lost_user);
+            SaveGame.Save<int>("livesLostMovingUser", this.lives_lost_enemy_moving_user);
+            SaveGame.Save<int>("livesLostStaticUser", this.lives_lost_enemy_static_user);
+            SaveGame.Save<int>("livesLostWaterUser", this.lives_lost_enemy_water_user);
+            SaveGame.Save<float>("averageVelocityUser", this.average_velocity_user);
+            SaveGame.Save<int>("averageVelocityUserI", this.average_velocity_user_i);
+            SaveGame.Save<float>("averageVelocityUserM2", this.average_velocity_user_m2);
         }
 
         public void ExitGame()
@@ -614,6 +909,9 @@ namespace RedRunner
             this.jumps_game = 0;
             this.average_velocity_game = 0;
             this.average_velocity_game_i = 0;
+            this.average_velocity_game_m2 = 0;
+            this.specialThinkingBlock = false;
+            this.firstSection = true;
 
             this.score_section = 0;
             this.coins_section = 0;
@@ -638,6 +936,7 @@ namespace RedRunner
             }
             live_lost = false;
             ResumeGame();
+            this.AdaptivityAIGame.RequestDecision();
         }
 
         public void StopGame()
