@@ -59,6 +59,10 @@ namespace RedRunner
         private bool m_AudioEnabled = true;
         private bool specialThinkingBlock = false;
         private bool firstSection = true;
+        private int currentSection = -1;
+        private bool adaptivityOn = false;
+        public UIRoundInfo roundInfoText;
+        private string roundInfoLetter = "B";
 
         [SerializeField]
         private GameAI.PlayerWatcher m_PlayerAi;
@@ -117,9 +121,9 @@ namespace RedRunner
         private float average_velocity_section;
         private int average_velocity_section_i;
         [SerializeField]
-        private string csv_section_path = @"./data_section.csv";
+        private string csv_section_path = @"/data_section.csv";
         [SerializeField]
-        private string csv_game_path = @"./data_game.csv";
+        private string csv_game_path = @"/data_game.csv";
         private StreamWriter csv_section;
         private StreamWriter csv_game;
         private bool live_lost = false;
@@ -394,6 +398,20 @@ namespace RedRunner
                 else return 0;
             }
         }
+        public int CurrentSection
+        {
+            get
+            {
+                return this.currentSection;
+            }
+        }
+        public bool AdaptivityOn
+        {
+            get
+            {
+                return this.adaptivityOn;
+            }
+        }
         #endregion
 
         public float Timer
@@ -536,18 +554,31 @@ namespace RedRunner
             {
                 this.average_velocity_user_m2 = 0f;
             }
-            if (!File.Exists(csv_section_path))
+            if (SaveGame.Exists("adaptivityStartOn") && !m_MainCharacter.PlayerAiTraining)
             {
-                this.csv_section = File.AppendText(csv_section_path);
-                this.csv_section.WriteLine("unique_identifier;session_id;section;total_coins;captured_coins;easy_captured_coins;hard_captured_coins;chest_normals;chest_hard;total_time;total_time_gained;lives_lost;lives_lost_water;lives_lost_static;lives_lost_moving;best_score;end_score;player_backtracked;jumps;average_velocity");
+                this.adaptivityOn = SaveGame.Load<bool>("adaptivityStartOn");
             }
-            else this.csv_section = File.AppendText(csv_section_path);
-            if (!File.Exists(csv_game_path))
+            else
             {
-                this.csv_game = File.AppendText(csv_game_path);
-                this.csv_game.WriteLine("unique_identifier;session_id;total_coins;captured_coins;easy_captured_coins;hard_captured_coins;chest_normals;chest_hard;total_time;total_time_gained;lives_lost;lives_lost_water;lives_lost_static;lives_lost_moving;best_score;end_score;player_backtracked;jumps;average_velocity");
+                int randomNumberAdaptivity = UnityEngine.Random.Range(0, 2);
+                if (randomNumberAdaptivity == 0) this.adaptivityOn = false;
+                else this.adaptivityOn = true;
+                SaveGame.Save<bool>("adaptivityStartOn", this.adaptivityOn);
             }
-            else this.csv_game = File.AppendText(csv_game_path);
+            if (!File.Exists(Application.persistentDataPath + csv_section_path))
+            {
+
+                this.csv_section = File.AppendText(Application.persistentDataPath + csv_section_path);
+                this.csv_section.WriteLine("unique_identifier;session_id;section;adaptivity;round_letter;total_coins;captured_coins;easy_captured_coins;hard_captured_coins;chest_normals;chest_hard;total_time;total_time_gained;lives_lost;lives_lost_water;lives_lost_static;lives_lost_moving;best_score;end_score;player_backtracked;jumps;average_velocity");
+            }
+            else this.csv_section = File.AppendText(Application.persistentDataPath + csv_section_path);
+            if (!File.Exists(Application.persistentDataPath + csv_game_path))
+            {
+                this.csv_game = File.AppendText(Application.persistentDataPath + csv_game_path);
+                this.csv_game.WriteLine("unique_identifier;session_id;adaptivity;round_letter;total_coins;captured_coins;easy_captured_coins;hard_captured_coins;chest_normals;chest_hard;total_time;total_time_gained;lives_lost;lives_lost_water;lives_lost_static;lives_lost_moving;best_score;end_score;player_backtracked;jumps;average_velocity;variance");
+            }
+            else this.csv_game = File.AppendText(Application.persistentDataPath + csv_game_path);
+            this.roundInfoLetter = "B";
         }
 
         void UpdateDeathEvent(bool isDead)
@@ -647,23 +678,29 @@ namespace RedRunner
 
         private void WriteCsvSection(Block section)
         {
-            // if something goes really wrong
-            if (section == null)
+            if (m_Score != 0f)
             {
-                section = TerrainGenerator.Singleton.GetCharacterBlock();
+                // if something goes really wrong
+                if (section == null)
+                {
+                    section = TerrainGenerator.Singleton.GetCharacterBlock();
+                }
+                if (section == null) return;
+                object[] outputarray = new object[] { SystemInfo.deviceUniqueIdentifier, game_id, section.name, this.adaptivityOn, this.roundInfoLetter, m_Coin.Value, coins_section, coins_easy_section, coins_hard_section, chest_normal_section, chest_hard_section, total_time_section, total_time_gained_section, lives_lost_section, lives_lost_enemy_water_section, lives_lost_enemy_static_section, lives_lost_enemy_moving_section, m_HighScore, m_Score, player_backtracked_section, jumps_section, average_velocity_section };
+                StringBuilder sbOutput = new StringBuilder();
+                sbOutput.Append(string.Join(";", outputarray));
+                this.csv_section.WriteLine(sbOutput.ToString());
             }
-            if (section == null) return;
-            object[] outputarray = new object[] { SystemInfo.deviceUniqueIdentifier, game_id, section.name, m_Coin.Value, coins_section, coins_easy_section, coins_hard_section, chest_normal_section, chest_hard_section, total_time_section, total_time_gained_section, lives_lost_section, lives_lost_enemy_water_section, lives_lost_enemy_static_section, lives_lost_enemy_moving_section, m_HighScore, m_Score, player_backtracked_section, jumps_section, average_velocity_section };
-            StringBuilder sbOutput = new StringBuilder();
-            sbOutput.Append(string.Join(";", outputarray));
-            this.csv_section.WriteLine(sbOutput.ToString());
         }
         private void WriteCsvGame()
         {
-            object[] outputarray = new object[] { SystemInfo.deviceUniqueIdentifier, game_id, m_Coin.Value, coins_game, coins_easy_game, coins_hard_game, chest_normal_game, chest_hard_game, total_time_game, total_time_gained_game, lives_lost_game, lives_lost_enemy_water_game, lives_lost_enemy_static_game, lives_lost_enemy_moving_game, m_HighScore, m_Score, player_backtracked_game, jumps_game, average_velocity_game };
-            StringBuilder sbOutput = new StringBuilder();
-            sbOutput.Append(string.Join(";", outputarray));
-            this.csv_game.WriteLine(sbOutput.ToString());
+            if (m_Score != 0f)
+            {
+                object[] outputarray = new object[] { SystemInfo.deviceUniqueIdentifier, game_id, this.adaptivityOn, this.roundInfoLetter, m_Coin.Value, coins_game, coins_easy_game, coins_hard_game, chest_normal_game, chest_hard_game, total_time_game, total_time_gained_game, lives_lost_game, lives_lost_enemy_water_game, lives_lost_enemy_static_game, lives_lost_enemy_moving_game, m_HighScore, m_Score, player_backtracked_game, jumps_game, average_velocity_game, this.VarianceVelocityGame };
+                StringBuilder sbOutput = new StringBuilder();
+                sbOutput.Append(string.Join(";", outputarray));
+                this.csv_game.WriteLine(sbOutput.ToString());
+            }
         }
 
         IEnumerator DeathCrt(float wait_time)
@@ -785,7 +822,7 @@ namespace RedRunner
                         var delta2P = this.average_velocity_section - this.average_velocity_user;
                         this.average_velocity_user_m2 += deltaP * delta2P;
 
-                        Debug.Log("Time: " + total_time_section + " Velocity: " + average_velocity_section + " Jumps:" + jumps_section);
+                        //Debug.Log("Time: " + total_time_section + " Velocity: " + average_velocity_section + " Jumps:" + jumps_section);
                         m_PlayerAi.incrementReward(0.3f);
                         this.WriteCsvSection(this.current_block);
                     }
@@ -807,7 +844,9 @@ namespace RedRunner
                     this.average_velocity_section_i = 0;
                     this.current_block_position = now_current_block_position;
                     this.current_block = TerrainGenerator.Singleton.GetCharacterBlock();
-                    if (this.current_block.Identifier == -2) this.specialThinkingBlock = true;
+                    if (this.current_block.Identifier == -1) this.specialThinkingBlock = true;
+                    if (!firstSection && !specialThinkingBlock)
+                        this.currentSection = this.current_block.Identifier;
                 }
 
                 m_Timer -= Time.deltaTime;
@@ -866,6 +905,9 @@ namespace RedRunner
             SaveGame.Save<float>("averageVelocityUser", this.average_velocity_user);
             SaveGame.Save<int>("averageVelocityUserI", this.average_velocity_user_i);
             SaveGame.Save<float>("averageVelocityUserM2", this.average_velocity_user_m2);
+            var itemPath = Application.persistentDataPath + this.csv_game_path;
+            itemPath = itemPath.Replace(@"/", @"\");
+            System.Diagnostics.Process.Start("explorer.exe", "/select," + itemPath);
         }
 
         public void ExitGame()
@@ -890,6 +932,7 @@ namespace RedRunner
 
         public void StartGame()
         {
+            this.AdaptivityAIGame.EndEpisode();
             m_GameStarted = true;
             this.current_block = TerrainGenerator.Singleton.GetCharacterBlock();
             this.current_block_position = TerrainGenerator.Singleton.GetCharacterBlockPositionX();
@@ -912,6 +955,13 @@ namespace RedRunner
             this.average_velocity_game_m2 = 0;
             this.specialThinkingBlock = false;
             this.firstSection = true;
+            this.currentSection = -1;
+            this.adaptivityOn = !this.adaptivityOn;
+            if (this.roundInfoLetter == "B")
+                this.roundInfoLetter = "A";
+            else
+                this.roundInfoLetter = "B";
+            this.roundInfoText.text = "Round " + this.roundInfoLetter;
 
             this.score_section = 0;
             this.coins_section = 0;

@@ -33,6 +33,10 @@ public class AdaptivityAIGame : Agent
         sensor.AddObservation(RedRunner.GameManager.Singleton.JumpsGame);
         sensor.AddObservation(RedRunner.GameManager.Singleton.BacktracksGame);
         sensor.AddObservation(RedRunner.GameManager.Singleton.totalGameTime);
+        if (RedRunner.GameManager.Singleton.CurrentSection == -1)
+            sensor.AddObservation(RedRunner.GameManager.Singleton.CurrentSection);
+        else
+            sensor.AddObservation(RedRunner.GameManager.Singleton.CurrentSection - 1);
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -43,4 +47,5 @@ public class AdaptivityAIGame : Agent
     public override void OnEpisodeBegin()
     {
     }
+
 }

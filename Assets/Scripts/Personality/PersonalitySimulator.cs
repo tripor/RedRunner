@@ -19,7 +19,7 @@ public class PersonalitySimulator : MonoBehaviour
     private float currentImmersion = 0;
     private bool endGame = false;
     private bool firstSection = true;
-    private int currentSection = 3;
+    public int currentSection = -1;
     private bool waitingForNewSection = false;
 
     public static PersonalitySimulator Instance;
@@ -196,11 +196,11 @@ public class PersonalitySimulator : MonoBehaviour
 
         // Jumps
         int randomJumpsSections = Random.Range(personalities[currentPersonality].jumpsSection[section].minimum, personalities[currentPersonality].jumpsSection[section].maximum + 1);
-        jumpsGame += randomJumpsSections;
+        jumpsGame += randomJumpsSections + Mathf.RoundToInt(randomJumpsSections * trueLost * 0.8f);
 
         // BackTrack
         int randomBacktrackSections = Random.Range(1, 101);
-        if (randomBacktrackSections <= personalities[currentPersonality].backtrackProbability[section]) backtracksGame++;
+        if (randomBacktrackSections <= personalities[currentPersonality].backtrackProbability[section]) backtracksGame += 1 + trueLost;
 
         float average;
 

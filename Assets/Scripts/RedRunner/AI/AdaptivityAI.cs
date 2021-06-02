@@ -7,6 +7,7 @@ using Unity.MLAgents.Actuators;
 
 public class AdaptivityAI : Agent
 {
+
     public override void CollectObservations(VectorSensor sensor)
     {
         int currentPersonality = PersonalitySimulator.Instance.currentPersonality;
@@ -68,6 +69,7 @@ public class AdaptivityAI : Agent
         sensor.AddObservation(PersonalitySimulator.Instance.jumpsGame);
         sensor.AddObservation(PersonalitySimulator.Instance.backtracksGame);
         sensor.AddObservation(PersonalitySimulator.Instance.timeSpent);
+        sensor.AddObservation(PersonalitySimulator.Instance.currentSection);
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
