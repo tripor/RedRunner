@@ -138,9 +138,9 @@ namespace RedRunner
         public Property<int> m_Coin = new Property<int>(0);
 
         public float max_game_time = 300f;
+        public float coin_add_game_time = 1f;
         public bool simple_game = false;
         public bool curriculum = false;
-        public float coin_add_game_time = 1f;
         public int default_block = 3;
         public AdaptivityAIGame AdaptivityAIGame;
 
